@@ -1,0 +1,17 @@
+rc_ok=0   (attendu 0)
+rc_verrou=2   (attendu 2)
+rc_source_absente=3   (attendu 3)
+$ journalctl -t helios-archive -n 15 --no-pager
+nov. 02 23:54:51 srv-core helios-archive[35425]: demarrage
+nov. 02 23:54:52 srv-core helios-archive[35435]: archive /var/lib/helios/archives/telemetry-20261102-235451.csv.gz (167 lignes)
+nov. 02 23:54:52 srv-core helios-archive[35439]: purge : 0 archive(s) supprimee(s)
+nov. 02 23:54:52 srv-core helios-archive[35441]: fin d execution rc=0
+nov. 02 23:54:53 srv-core helios-archive[35454]: une autre instance tourne deja
+nov. 02 23:54:53 srv-core helios-archive[35455]: fin d execution rc=2
+nov. 02 23:55:12 srv-core helios-archive[35473]: source illisible : /var/lib/helios/telemetry.csv
+nov. 02 23:55:12 srv-core helios-archive[35474]: fin d execution rc=3
+
+$ ls -l /var/lib/helios/archives
+total 4
+-rw-r-----. 1 helios helios 1017  2 nov.  23:54 telemetry-20261102-235451.csv.gz
+

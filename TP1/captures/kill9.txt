@@ -1,0 +1,24 @@
+$ systemctl show -p MainPID --value helios-collect.service
+26962
+
+$ kill -9 "$(systemctl show -p MainPID --value helios-collect.service)"
+
+$ sleep 8 ; systemctl status helios-collect.service --no-pager | head -5
+● helios-collect.service - Collecteur de telemetrie Helios
+     Loaded: loaded (/etc/systemd/system/helios-collect.service; enabled; preset: disabled)
+     Active: active (running) since Mon 2026-11-02 23:40:25 CET; 3s ago
+       Docs: https://wiki.helios.lan/collect
+   Main PID: 28222 (helios-collect.)
+
+$ systemctl show -p MainPID -p NRestarts --value helios-collect.service
+28222
+1
+
+$ journalctl -u helios-collect.service -n 8 --no-pager
+nov. 02 23:40:19 srv-core systemd[1]: Started Collecteur de telemetrie Helios.
+nov. 02 23:40:20 srv-core systemd[1]: helios-collect.service: Main process exited, code=killed, status=9/KILL
+nov. 02 23:40:20 srv-core systemd[1]: helios-collect.service: Failed with result 'signal'.
+nov. 02 23:40:25 srv-core systemd[1]: helios-collect.service: Scheduled restart job, restart counter is at 1.
+nov. 02 23:40:25 srv-core systemd[1]: Stopped Collecteur de telemetrie Helios.
+nov. 02 23:40:25 srv-core systemd[1]: Started Collecteur de telemetrie Helios.
+

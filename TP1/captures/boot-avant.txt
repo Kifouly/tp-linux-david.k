@@ -1,0 +1,54 @@
+$ systemd-analyze
+Startup finished in 7.813s (kernel) + 18.562s (initrd) + 1min 28.084s (userspace) = 1min 54.460s 
+graphical.target reached after 31.951s in userspace.
+
+$ systemd-analyze blame | head -15
+1min 10.580s kdump.service
+     23.778s dev-disk-by\x2duuid-c9701013\x2d14d3\x2d41ae\x2da8a9\x2d71cbeb03be8a.device
+     23.778s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.0\x2dpart1.device
+     23.778s dev-sda1.device
+     23.778s sys-devices-pci0000:00-0000:00:0d.0-ata3-host2-target2:0:0-2:0:0:0-block-sda-sda1.device
+     23.778s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1\x2dpart1.device
+     23.778s dev-disk-by\x2did-ata\x2dVBOX_HARDDISK_VBbd3e7cb9\x2dc8b7ea63\x2dpart1.device
+     23.778s dev-disk-by\x2dpartuuid-c4833c3a\x2d01.device
+     23.390s dev-sda.device
+     23.390s dev-disk-by\x2ddiskseq-1.device
+     23.385s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.0.device
+     23.385s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.device
+     23.385s dev-disk-by\x2did-ata\x2dVBOX_HARDDISK_VBbd3e7cb9\x2dc8b7ea63.device
+     23.385s sys-devices-pci0000:00-0000:00:0d.0-ata3-host2-target2:0:0-2:0:0:0-block-sda.device
+     23.115s sys-devices-platform-serial8250-tty-ttyS2.device
+
+$ systemd-analyze critical-chain
+The time when unit became active or started is printed after the "@" character.
+The time the unit took to start is printed after the "+" character.
+
+graphical.target @31.951s
+└─multi-user.target @31.948s
+  └─tuned-ppd.service @48.729s +6.415s
+    └─tuned.service @15.923s +4.509s
+      └─network.target @15.807s
+        └─wpa_supplicant.service @51.689s +377ms
+          └─basic.target @12.554s
+            └─dbus-broker.service @12.463s +89ms
+              └─dbus.socket @12.449s
+                └─sysinit.target @12.435s
+                  └─systemd-update-utmp.service @12.425s +9ms
+                    └─auditd.service @12.323s +96ms
+                      └─systemd-tmpfiles-setup.service @12.163s +153ms
+                        └─local-fs.target @12.133s
+                          └─run-credentials-systemd\x2dtmpfiles\x2dsetup.service.mount @12.172s
+                            └─local-fs-pre.target @12.073s
+                              └─systemd-tmpfiles-setup-dev.service @5.453s +763ms
+                                └─kmod-static-nodes.service @4.139s +766ms
+                                  └─systemd-journald.socket
+                                    └─system.slice
+                                      └─-.slice
+
+$ systemctl disable --now firewalld
+Removed "/etc/systemd/system/multi-user.target.wants/firewalld.service".
+Removed "/etc/systemd/system/dbus-org.fedoraproject.FirewallD1.service".
+
+$ systemctl mask NetworkManager-wait-online.service
+Created symlink /etc/systemd/system/NetworkManager-wait-online.service → /dev/null.
+

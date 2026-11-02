@@ -1,0 +1,23 @@
+$ cat /etc/cron.d/helios-legacy
+MAILTO=""
+30 2 * * * root /usr/local/sbin/helios-archive.sh
+
+$ systemctl restart crond ; journalctl -u crond -n 10 --no-pager
+nov. 02 23:55:25 srv-core crond[938]: (CRON) INFO (Shutting down)
+nov. 02 23:55:25 srv-core systemd[1]: Stopping Command Scheduler...
+nov. 02 23:55:25 srv-core systemd[1]: crond.service: Deactivated successfully.
+nov. 02 23:55:25 srv-core systemd[1]: Stopped Command Scheduler.
+nov. 02 23:55:25 srv-core systemd[1]: crond.service: Consumed 3.166s CPU time.
+nov. 02 23:55:25 srv-core systemd[1]: Started Command Scheduler.
+nov. 02 23:55:25 srv-core crond[35663]: (CRON) STARTUP (1.5.7)
+nov. 02 23:55:25 srv-core crond[35663]: (CRON) INFO (Syslog will be used instead of sendmail.)
+nov. 02 23:55:25 srv-core crond[35663]: (CRON) INFO (RANDOM_DELAY will be scaled with factor 66% if used.)
+nov. 02 23:55:25 srv-core crond[35663]: (CRON) INFO (running with inotify support)
+
+$ grep -i anacron /etc/cron.d/0hourly /etc/anacrontab 2>/dev/null
+/etc/anacrontab:# /etc/anacrontab: configuration file for anacron
+/etc/anacrontab:# See anacron(8) and anacrontab(5) for details.
+
+$ ls /etc/cron.d/
+0hourly
+

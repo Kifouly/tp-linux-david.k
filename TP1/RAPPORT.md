@@ -13,19 +13,47 @@ Toutes les sorties citées ici sont dans `captures/`, produites par `scripts/tp1
 
 | | Mesure `systemd-analyze` |
 |---|---|
-| **Avant** | {{BOOT_AVANT}} |
-| **Après** | {{BOOT_APRES}} |
+| **Avant** | Startup finished in 7.813s (kernel) + 18.562s (initrd) + 1min 28.084s (userspace) = 1min 54.460s |
+| **Après** | Startup finished in 5.664s (kernel) + 18.489s (initrd) + 1min 18.195s (userspace) = 1min 42.349s |
 
 `systemd-analyze blame` (15 premières unités) — avant :
 
 ```
-{{BLAME_AVANT}}
+1min 10.580s kdump.service
+     23.778s dev-disk-by\x2duuid-c9701013\x2d14d3\x2d41ae\x2da8a9\x2d71cbeb03be8a.device
+     23.778s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.0\x2dpart1.device
+     23.778s dev-sda1.device
+     23.778s sys-devices-pci0000:00-0000:00:0d.0-ata3-host2-target2:0:0-2:0:0:0-block-sda-sda1.device
+     23.778s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1\x2dpart1.device
+     23.778s dev-disk-by\x2did-ata\x2dVBOX_HARDDISK_VBbd3e7cb9\x2dc8b7ea63\x2dpart1.device
+     23.778s dev-disk-by\x2dpartuuid-c4833c3a\x2d01.device
+     23.390s dev-sda.device
+     23.390s dev-disk-by\x2ddiskseq-1.device
+     23.385s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.0.device
+     23.385s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.device
+     23.385s dev-disk-by\x2did-ata\x2dVBOX_HARDDISK_VBbd3e7cb9\x2dc8b7ea63.device
+     23.385s sys-devices-pci0000:00-0000:00:0d.0-ata3-host2-target2:0:0-2:0:0:0-block-sda.device
+     23.115s sys-devices-platform-serial8250-tty-ttyS2.device
 ```
 
 Après :
 
 ```
-{{BLAME_APRES}}
+43.669s kdump.service
+33.799s dev-disk-by\x2did-ata\x2dVBOX_HARDDISK_VBbd3e7cb9\x2dc8b7ea63\x2dpart1.device
+33.798s dev-disk-by\x2dpartuuid-c4833c3a\x2d01.device
+33.798s sys-devices-pci0000:00-0000:00:0d.0-ata3-host1-target1:0:0-1:0:0:0-block-sda-sda1.device
+33.798s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1\x2dpart1.device
+33.798s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.0\x2dpart1.device
+33.782s dev-sda1.device
+33.782s dev-disk-by\x2duuid-c9701013\x2d14d3\x2d41ae\x2da8a9\x2d71cbeb03be8a.device
+33.761s dev-disk-by\x2did-ata\x2dVBOX_HARDDISK_VBbd3e7cb9\x2dc8b7ea63\x2dpart2.device
+33.761s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1\x2dpart2.device
+33.761s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.0\x2dpart2.device
+33.761s dev-sda2.device
+33.761s sys-devices-pci0000:00-0000:00:0d.0-ata3-host1-target1:0:0-1:0:0:0-block-sda-sda2.device
+33.761s dev-disk-by\x2dpartuuid-c4833c3a\x2d02.device
+33.302s dev-sda.device
 ```
 
 Chronogrammes : `captures/boot-avant.svg`, `captures/boot-apres.svg`.
@@ -64,8 +92,8 @@ Fichier : `configs/helios-collect.service`. Rôle de chaque directive :
 
 | | Exposition |
 |---|---|
-| Unit d'origine | {{SEC_AVANT}} |
-| Unit + drop-in durci | {{SEC_APRES}} |
+| Unit d'origine | 5.3 MEDIUM 😐 |
+| Unit + drop-in durci | 0.7 SAFE 😀 |
 
 Détail complet : `captures/security-avant.txt`, `captures/security-apres.txt`. Plus le score est bas, moins le service est exposé.
 
@@ -109,7 +137,7 @@ Le mode 802.3ad (LACP) agrège les liens en actif/actif mais nécessite un commu
 
 **Bascule** (`captures/bascule-bond.txt`) : avant la coupure `Currently Active Slave: enp0s9` ; après `VBoxManage controlvm srv-core setlinkstate3 off`, `enp0s9` passe `MII Status: down` et le bond bascule sur `enp0s10`. Au retour du lien, `primary` fait revenir sur `enp0s9`.
 
-Bilan du ping pendant le test : `{{PING_BASCULE}}`
+Bilan du ping pendant le test : `_(non mesure)_`
 
 ### 2.3 VLAN 802.1Q 42
 
@@ -142,9 +170,9 @@ Codes retour observés (`captures/archive-rc.txt`) :
 
 | Cas | Attendu | Observé |
 |---|---|---|
-| Exécution normale | 0 | {{RC_OK}} |
-| Une autre instance tient le verrou | 2 | {{RC_VERROU}} |
-| `telemetry.csv` absent | 3 | {{RC_ABSENT}} |
+| Exécution normale | 0 | 0 |
+| Une autre instance tient le verrou | 2 | 2 |
+| `telemetry.csv` absent | 3 | 3 |
 
 ### 3.2 Timer systemd vs cron
 

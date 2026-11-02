@@ -1,0 +1,42 @@
+$ systemd-analyze calendar '*-*-* 02:30:00' --iterations=3
+Normalized form: *-*-* 02:30:00
+    Next elapse: Tue 2026-11-03 02:30:00 CET
+       (in UTC): Tue 2026-11-03 01:30:00 UTC
+       From now: 2h 34min left
+       Iter. #2: Wed 2026-11-04 02:30:00 CET
+       (in UTC): Wed 2026-11-04 01:30:00 UTC
+       From now: 1 day 2h left
+       Iter. #3: Thu 2026-11-05 02:30:00 CET
+       (in UTC): Thu 2026-11-05 01:30:00 UTC
+       From now: 2 days left
+
+$ systemctl list-timers helios-archive.timer --all --no-pager
+NEXT                        LEFT          LAST PASSED UNIT                 ACTIVATES
+Tue 2026-11-03 02:31:36 CET 2h 36min left -    -      helios-archive.timer helios-archive.service
+
+1 timers listed.
+
+$ systemctl start helios-archive.service && systemctl status helios-archive.service --no-pager
+○ helios-archive.service - Archivage de la telemetrie Helios
+     Loaded: loaded (/etc/systemd/system/helios-archive.service; static)
+     Active: inactive (dead) since Mon 2026-11-02 23:55:20 CET; 105ms ago
+TriggeredBy: ● helios-archive.timer
+    Process: 35583 ExecStart=/usr/local/sbin/helios-archive.sh (code=exited, status=0/SUCCESS)
+   Main PID: 35583 (code=exited, status=0/SUCCESS)
+        CPU: 362ms
+
+nov. 02 23:55:19 srv-core systemd[1]: Starting Archivage de la telemetrie Helios...
+nov. 02 23:55:20 srv-core helios-archive[35585]: demarrage
+nov. 02 23:55:20 srv-core helios-archive[35595]: archive /var/lib/helios/archives/telemetry-20261102-235520.csv.gz (6 lignes)
+nov. 02 23:55:20 srv-core helios-archive[35599]: purge : 0 archive(s) supprimee(s)
+nov. 02 23:55:20 srv-core helios-archive[35601]: fin d execution rc=0
+nov. 02 23:55:20 srv-core systemd[1]: helios-archive.service: Deactivated successfully.
+nov. 02 23:55:20 srv-core systemd[1]: Finished Archivage de la telemetrie Helios.
+
+$ systemctl show -p Nice -p IOSchedulingClass helios-archive.service
+Nice=10
+IOSchedulingClass=3
+
+$ systemctl list-dependencies --reverse helios-archive.service --no-pager
+helios-archive.service
+

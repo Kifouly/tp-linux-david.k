@@ -1,0 +1,50 @@
+$ ip -br addr
+lo               UNKNOWN        127.0.0.1/8 ::1/128 
+enp0s3           UP             10.0.2.15/24 fd17:625c:f037:2:a00:27ff:fe16:ef5a/64 fe80::a00:27ff:fe16:ef5a/64 
+enp0s9           UP             
+enp0s10          UP             
+bond0            UP             10.42.0.10/24 
+bond0.42@bond0   UP             10.42.42.10/24 
+
+$ grep -E 'Bonding Mode|Currently Active Slave|Slave Interface|MII Status' /proc/net/bonding/bond0
+Bonding Mode: fault-tolerance (active-backup) (fail_over_mac active)
+Currently Active Slave: enp0s9
+MII Status: up
+Slave Interface: enp0s10
+MII Status: up
+Slave Interface: enp0s9
+MII Status: up
+
+$ ip rule show
+0:	from all lookup local
+100:	from 10.42.42.10 lookup transport proto static
+32766:	from all lookup main
+32767:	from all lookup default
+
+$ ip route show table transport
+default via 10.42.42.11 dev bond0.42 proto static metric 400 
+
+$ ip route get 8.8.8.8 from 10.42.42.10
+8.8.8.8 from 10.42.42.10 via 10.42.42.11 dev bond0.42 table transport uid 0 
+    cache 
+
+$ ip route get 8.8.8.8
+8.8.8.8 via 10.0.2.2 dev enp0s3 src 10.0.2.15 uid 0 
+    cache 
+
+$ ping -c 2 10.42.0.11 ; ping -c 2 10.42.42.11
+PING 10.42.0.11 (10.42.0.11) 56(84) octets de données.
+64 octets de 10.42.0.11 : icmp_seq=1 ttl=64 temps=14.7 ms
+64 octets de 10.42.0.11 : icmp_seq=2 ttl=64 temps=8.05 ms
+
+--- statistiques ping 10.42.0.11 ---
+2 paquets transmis, 2 reçus, 0% packet loss, time 1002ms
+rtt min/avg/max/mdev = 8.046/11.360/14.674/3.314 ms
+PING 10.42.42.11 (10.42.42.11) 56(84) octets de données.
+64 octets de 10.42.42.11 : icmp_seq=1 ttl=64 temps=22.8 ms
+64 octets de 10.42.42.11 : icmp_seq=2 ttl=64 temps=4.78 ms
+
+--- statistiques ping 10.42.42.11 ---
+2 paquets transmis, 2 reçus, 0% packet loss, time 1004ms
+rtt min/avg/max/mdev = 4.784/13.814/22.845/9.030 ms
+

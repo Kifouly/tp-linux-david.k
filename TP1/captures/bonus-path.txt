@@ -1,0 +1,15 @@
+$ touch /srv/helios/inbox/test-$(date +%s).csv ; sleep 3 ; journalctl -t helios-archive -n 5 --no-pager
+nov. 02 23:55:20 srv-core helios-archive[35601]: fin d execution rc=0
+nov. 02 23:55:33 srv-core helios-archive[35770]: demarrage
+nov. 02 23:55:33 srv-core helios-archive[35780]: archive /var/lib/helios/archives/telemetry-20261102-235533.csv.gz (2 lignes)
+nov. 02 23:55:33 srv-core helios-archive[35784]: purge : 0 archive(s) supprimee(s)
+nov. 02 23:55:33 srv-core helios-archive[35786]: fin d execution rc=0
+
+$ systemctl status helios-inbox.path --no-pager | head -6
+● helios-inbox.path - Declenche l archivage Helios a chaque depot dans l inbox
+     Loaded: loaded (/etc/systemd/system/helios-inbox.path; enabled; preset: disabled)
+     Active: active (waiting) since Mon 2026-11-02 23:55:33 CET; 3s ago
+      Until: Mon 2026-11-02 23:55:33 CET; 3s ago
+   Triggers: ● helios-archive.service
+
+

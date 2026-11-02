@@ -1,0 +1,18 @@
+$ ps -o pid,ni,pri,cls,rtprio,comm -p 33297
+    PID  NI PRI CLS RTPRIO COMMAND
+  33297  19   0  TS      - sha256sum
+
+$ renice -n 5 -p 33297
+33297 (process ID) priorité précédente 19, nouvelle priorité 5
+
+$ ionice -c 2 -n 7 -p 33297 ; ionice -p 33297
+best-effort : priorité 7
+
+$ chrt -p 33297
+stratégie d’ordonnancement actuelle pour le PID 33297 : SCHED_OTHER
+priorité de planification actuelle pour le PID 33297 : 0
+
+$ ps -o pid,ni,pri,cls,rtprio,comm -p 33297
+    PID  NI PRI CLS RTPRIO COMMAND
+  33297   5  14  TS      - sha256sum
+

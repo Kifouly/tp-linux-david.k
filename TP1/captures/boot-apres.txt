@@ -1,0 +1,47 @@
+$ systemd-analyze
+Startup finished in 5.664s (kernel) + 18.489s (initrd) + 1min 18.195s (userspace) = 1min 42.349s 
+graphical.target reached after 52.764s in userspace.
+
+$ systemd-analyze blame | head -15
+43.669s kdump.service
+33.799s dev-disk-by\x2did-ata\x2dVBOX_HARDDISK_VBbd3e7cb9\x2dc8b7ea63\x2dpart1.device
+33.798s dev-disk-by\x2dpartuuid-c4833c3a\x2d01.device
+33.798s sys-devices-pci0000:00-0000:00:0d.0-ata3-host1-target1:0:0-1:0:0:0-block-sda-sda1.device
+33.798s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1\x2dpart1.device
+33.798s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.0\x2dpart1.device
+33.782s dev-sda1.device
+33.782s dev-disk-by\x2duuid-c9701013\x2d14d3\x2d41ae\x2da8a9\x2d71cbeb03be8a.device
+33.761s dev-disk-by\x2did-ata\x2dVBOX_HARDDISK_VBbd3e7cb9\x2dc8b7ea63\x2dpart2.device
+33.761s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1\x2dpart2.device
+33.761s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.0\x2dpart2.device
+33.761s dev-sda2.device
+33.761s sys-devices-pci0000:00-0000:00:0d.0-ata3-host1-target1:0:0-1:0:0:0-block-sda-sda2.device
+33.761s dev-disk-by\x2dpartuuid-c4833c3a\x2d02.device
+33.302s dev-sda.device
+
+$ systemd-analyze critical-chain
+The time when unit became active or started is printed after the "@" character.
+The time the unit took to start is printed after the "+" character.
+
+graphical.target @52.764s
+└─multi-user.target @52.764s
+  └─tuned-ppd.service @55.948s +10.581s
+    └─tuned.service @34.587s +18.176s
+      └─network.target @34.502s
+        └─wpa_supplicant.service @1min 170ms +580ms
+          └─basic.target @25.250s
+            └─dbus-broker.service @24.751s +486ms
+              └─dbus.socket @24.713s
+                └─sysinit.target @24.677s
+                  └─systemd-update-utmp.service @24.572s +103ms
+                    └─auditd.service @23.616s +920ms
+                      └─systemd-tmpfiles-setup.service @22.488s +1.092s
+                        └─local-fs.target @22.404s
+                          └─run-credentials-systemd\x2dtmpfiles\x2dsetup.service.mount @22.564s
+                            └─local-fs-pre.target @22.108s
+                              └─systemd-tmpfiles-setup-dev.service @9.580s +2.000s
+                                └─kmod-static-nodes.service @8.139s +674ms
+                                  └─systemd-journald.socket
+                                    └─system.slice
+                                      └─-.slice
+

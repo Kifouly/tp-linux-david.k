@@ -1,0 +1,36 @@
+$ systemctl is-enabled helios-collect.service
+enabled
+
+$ systemctl show -p MemoryMax helios-collect.service
+MemoryMax=100663296
+
+$ systemctl list-dependencies helios.target --no-pager | grep helios-collect
+● ├─helios-collect.service
+●   ├─helios-collect.service
+
+$ grep -E 'Currently Active Slave|MII Status' /proc/net/bonding/bond0
+Currently Active Slave: enp0s9
+MII Status: up
+MII Status: up
+MII Status: up
+
+$ ip route get 8.8.8.8 from 10.42.42.10
+8.8.8.8 from 10.42.42.10 via 10.42.42.11 dev bond0.42 table transport uid 0 
+    cache 
+
+$ ip route get 8.8.8.8
+8.8.8.8 via 10.0.2.2 dev enp0s3 src 10.0.2.15 uid 0 
+    cache 
+
+$ cat /root/tp/TP1/captures/archive-rc.txt | grep rc_
+rc_ok=0   (attendu 0)
+rc_verrou=2   (attendu 2)
+rc_source_absente=3   (attendu 3)
+
+$ systemctl list-timers helios-archive.timer --no-pager
+NEXT                        LEFT          LAST                        PASSED    UNIT                 ACTIVATES
+Tue 2026-11-03 02:31:46 CET 2h 19min left Mon 2026-11-02 23:55:18 CET 17min ago helios-archive.timer helios-archive.service
+
+1 timers listed.
+Pass --all to see loaded but inactive timers, too.
+

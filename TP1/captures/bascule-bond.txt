@@ -1,0 +1,71 @@
+$ grep -E 'Currently Active Slave|Slave Interface|MII Status' /proc/net/bonding/bond0
+Currently Active Slave: enp0s9
+MII Status: up
+Slave Interface: enp0s9
+MII Status: up
+Slave Interface: enp0s10
+MII Status: up
+
+--- PENDANT LA COUPURE ---
+$ grep -E 'Currently Active Slave|Slave Interface|MII Status' /proc/net/bonding/bond0
+Currently Active Slave: enp0s10
+MII Status: up
+Slave Interface: enp0s9
+MII Status: down
+Slave Interface: enp0s10
+MII Status: up
+
+$ cat /proc/net/bonding/bond0
+Ethernet Channel Bonding Driver: v5.14.0-687.10.1.el9_8.0.1.x86_64
+
+Bonding Mode: fault-tolerance (active-backup) (fail_over_mac active)
+Primary Slave: enp0s9 (primary_reselect always)
+Currently Active Slave: enp0s10
+MII Status: up
+MII Polling Interval (ms): 100
+Up Delay (ms): 0
+Down Delay (ms): 0
+Peer Notification Delay (ms): 0
+
+Slave Interface: enp0s9
+MII Status: down
+Speed: Unknown
+Duplex: Unknown
+Link Failure Count: 1
+Permanent HW addr: 08:00:27:3e:84:8b
+Slave queue ID: 0
+
+Slave Interface: enp0s10
+MII Status: up
+Speed: 1000 Mbps
+Duplex: full
+Link Failure Count: 0
+Permanent HW addr: 08:00:27:f2:dd:85
+Slave queue ID: 0
+
+$ journalctl -k -n 20 --no-pager | grep -i bond
+nov. 02 23:48:51 srv-core kernel: bond0: (slave enp0s10): prio updated, but will not affect failover re-selection as primary slave have been set
+nov. 02 23:48:51 srv-core kernel: bond0: (slave enp0s9): link status definitely up, 1000 Mbps full duplex
+nov. 02 23:48:51 srv-core kernel: bond0: (slave enp0s9): making interface the new active one
+nov. 02 23:48:51 srv-core kernel: bond0: active interface up!
+nov. 02 23:48:53 srv-core kernel: bond0: (slave enp0s10): link status definitely up, 1000 Mbps full duplex
+nov. 02 23:48:56 srv-core kernel: 8021q: adding VLAN 0 to HW filter on device bond0
+nov. 02 23:49:00 srv-core kernel: bond0: entered promiscuous mode
+nov. 02 23:49:02 srv-core kernel: bond0: left promiscuous mode
+nov. 02 23:52:02 srv-core kernel: bond0: (slave enp0s9): link status definitely down, disabling slave
+nov. 02 23:52:02 srv-core kernel: bond0: (slave enp0s10): making interface the new active one
+
+--- APRES RETABLISSEMENT ---
+$ grep -E 'Currently Active Slave|Slave Interface|MII Status' /proc/net/bonding/bond0
+Currently Active Slave: enp0s10
+MII Status: up
+Slave Interface: enp0s9
+MII Status: down
+Slave Interface: enp0s10
+MII Status: up
+
+--- PING PENDANT LE TEST ---
+
+--- statistiques ping 10.42.0.11 ---
+80 paquets transmis, 77 reçus, 3.75% packet loss, time 39723ms
+rtt min/avg/max/mdev = 1.581/11.686/281.164/35.233 ms

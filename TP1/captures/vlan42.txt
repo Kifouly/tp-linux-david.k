@@ -1,0 +1,13 @@
+$ ip -d link show bond0.42 | grep -A1 vlan
+    vlan protocol 802.1Q id 42 <REORDER_HDR> addrgenmode none numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535 tso_max_size 65536 tso_max_segs 65535 gro_max_size 65536 gso_ipv4_max_size 65536 gro_ipv4_max_size 65536 
+
+PING 10.42.42.11 (10.42.42.11) 56(84) octets de données.
+64 octets de 10.42.42.11 : icmp_seq=1 ttl=64 temps=28.7 ms
+64 octets de 10.42.42.11 : icmp_seq=2 ttl=64 temps=4.06 ms
+64 octets de 10.42.42.11 : icmp_seq=3 ttl=64 temps=8.92 ms
+64 octets de 10.42.42.11 : icmp_seq=4 ttl=64 temps=6.36 ms
+64 octets de 10.42.42.11 : icmp_seq=5 ttl=64 temps=5.05 ms
+
+--- statistiques ping 10.42.42.11 ---
+5 paquets transmis, 5 reçus, 0% packet loss, time 4010ms
+rtt min/avg/max/mdev = 4.057/10.616/28.692/9.183 ms

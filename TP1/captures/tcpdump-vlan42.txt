@@ -1,0 +1,11 @@
+dropped privs to tcpdump
+tcpdump: verbose output suppressed, use -v[v]... for full protocol decode
+listening on bond0, link-type EN10MB (Ethernet), snapshot length 262144 bytes
+23:49:01.398499 08:00:27:3e:84:8b > 01:00:5e:00:00:fb, ethertype 802.1Q (0x8100), length 85: vlan 42, p 0, ethertype IPv4 (0x0800), 10.42.42.10.mdns > 224.0.0.251.mdns: 0 PTR (QM)? _nmea-0183._tcp.local. (39)
+23:49:01.411764 08:00:27:3e:84:8b > 08:00:27:b9:09:c6, ethertype 802.1Q (0x8100), length 102: vlan 42, p 0, ethertype IPv4 (0x0800), 10.42.42.10 > 10.42.42.11: ICMP echo request, id 2, seq 2, length 64
+23:49:01.415689 08:00:27:b9:09:c6 > 08:00:27:3e:84:8b, ethertype 802.1Q (0x8100), length 102: vlan 42, p 0, ethertype IPv4 (0x0800), 10.42.42.11 > 10.42.42.10: ICMP echo reply, id 2, seq 2, length 64
+23:49:02.301498 08:00:27:3e:84:8b > Broadcast, ethertype 802.1Q (0x8100), length 46: vlan 42, p 0, ethertype ARP (0x0806), Request who-has 10.42.42.10 tell 10.42.42.10, length 28
+23:49:02.413400 08:00:27:3e:84:8b > 08:00:27:b9:09:c6, ethertype 802.1Q (0x8100), length 102: vlan 42, p 0, ethertype IPv4 (0x0800), 10.42.42.10 > 10.42.42.11: ICMP echo request, id 2, seq 3, length 64
+5 packets captured
+7 packets received by filter
+0 packets dropped by kernel
