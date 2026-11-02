@@ -1,9 +1,9 @@
 # TP1 — Configuration avancée du système Linux
 
 **Auteur :** David.K · **Module :** Administration d'un Linux Server (BTC2) · **Jour 1/5**
-**Environnement :** `srv-core` (Rocky Linux 9) + `srv-edge`
+**Environnement :** `srv-core2` (Rocky Linux 9, hostname `srv-core`) + `srv-edge` (Ubuntu 24.04)
 
-Toutes les sorties citées ici sont dans `captures/`, produites par `scripts/tp1.sh`. Les valeurs entre accolades doubles sont remplies automatiquement par `./scripts/tp1.sh collecte`.
+Toutes les sorties citées ici sont dans `captures/`, produites par `scripts/tp1.sh`. Les mesures ont été relevées sur les VM le 2 et le 3 novembre 2026.
 
 ---
 
