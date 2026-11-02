@@ -1,0 +1,11 @@
+[Unit]
+Description=Declenche l archivage Helios a chaque depot dans l inbox
+
+[Path]
+# PathChanged (et non PathExistsGlob) : le script ne vide pas l'inbox, un PathExistsGlob
+# re-declencherait le service en boucle jusqu'a « unit-start-limit-hit »
+PathChanged=/srv/helios/inbox
+Unit=helios-archive.service
+
+[Install]
+WantedBy=paths.target
