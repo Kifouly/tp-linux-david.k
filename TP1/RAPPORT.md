@@ -19,7 +19,7 @@ Au départ, `srv-core` et `srv-edge` n'avaient qu'une carte NAT (`captures/ecran
 | srv-edge | 1 | NAT | — | `enp0s3` |
 | srv-edge | 3 | Réseau interne | `helios-lan` | `enp0s9` |
 
-Captures : `captures/ecrans/01-*.jpg` à `03-*.jpg`.
+Captures : `captures/ecrans/01-*.jpg` à `03-*.jpg`. Le TP est finalement mené sur une réinstallation de srv-core nommée `srv-core2` (Rocky Linux 9), qui a reçu les mêmes cartes 3 et 4 sur `helios-lan` (`captures/ecrans/06-*.jpg`).
 
 ## Mission 1 — Services, processus et séquence de démarrage
 
@@ -155,7 +155,15 @@ Bilan du ping pendant le test : `_(non mesure)_`
 
 ### 2.3 VLAN 802.1Q 42
 
-`bond0.42` (10.42.42.10) sur `srv-core`, `enp0s9.42` (10.42.42.11) sur `srv-edge`. Mon `srv-edge` tourne sous Ubuntu Server 24.04, où le réseau est géré par netplan/systemd-networkd et non NetworkManager : l'IP métier et le VLAN y sont déclarés dans `/etc/netplan/60-helios.yaml` (`captures/edge.txt`), l'équivalent des profils `nmcli` de l'énoncé. La capture `captures/tcpdump-vlan42.txt` montre les trames `ethertype 802.1Q (0x8100), vlan 42` : le marquage est bien fait sur `bond0` et non en IP « nue ».
+`bond0.42` (10.42.42.10) sur `srv-core`, `enp0s9.42` (10.42.42.11) sur `srv-edge`. Mon `srv-edge` tourne sous Ubuntu Server 24.04, où le réseau est géré par netplan/systemd-networkd et non NetworkManager : l'IP métier et le VLAN y sont déclarés avec `netplan set` (écrits dans `/etc/netplan/70-netplan-set.yaml`, donc persistants), l'équivalent des profils `nmcli` de l'énoncé :
+
+```
+netplan set ethernets.enp0s9.addresses=[10.42.0.11/24]
+netplan set "vlans.vlan42={id: 42, link: enp0s9, addresses: [10.42.42.11/24]}"
+netplan apply
+```
+
+Résultat : `enp0s9 10.42.0.11/24` et `vlan42@enp0s9 10.42.42.11/24` (`captures/ecrans/04-*.jpg`, `05-*.jpg`). Un `netplan set` du VLAN champ par champ échoue (« missing 'link' property ») car netplan valide la définition à chaque appel : il faut poser `id` et `link` ensemble. La capture `captures/tcpdump-vlan42.txt` montre les trames `ethertype 802.1Q (0x8100), vlan 42` : le marquage est bien fait sur `bond0` et non en IP « nue ».
 
 ### 2.4 Routage par règles
 
