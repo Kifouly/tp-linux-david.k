@@ -32,6 +32,7 @@ pause() { read -r -p "$* [Entree pour continuer] " _; }
 [[ $EUID -eq 0 ]] || { echo "A lancer en root (sudo -i)"; exit 1; }
 
 m1_boot_avant() {
+  hostnamectl set-hostname srv-core
   titre "1.1 Boot AVANT allegement"
   : > "$CAP/boot-avant.txt"
   run boot-avant.txt "systemd-analyze"
@@ -112,6 +113,32 @@ m1_service() {
 
 m2_edge() {
   titre "2.1/2.3 srv-edge : IP metier + VLAN 42"
+  hostnamectl set-hostname srv-edge
+  : > "$CAP/edge.txt"
+  if ! command -v nmcli >/dev/null; then
+    # srv-edge sous Ubuntu Server : reseau gere par netplan/systemd-networkd
+    echo "nmcli absent : configuration via netplan" | tee -a "$CAP/edge.txt"
+    cat > /etc/netplan/60-helios.yaml <<EOF
+network:
+  version: 2
+  ethernets:
+    ${EDGE_IF}:
+      addresses: [10.42.0.11/24]
+  vlans:
+    ${EDGE_IF}.42:
+      id: 42
+      link: ${EDGE_IF}
+      addresses: [10.42.42.11/24]
+EOF
+    chmod 600 /etc/netplan/60-helios.yaml
+    netplan apply
+    sleep 2
+    sysctl -w net.ipv4.ip_forward=1 >/dev/null
+    run edge.txt "cat /etc/netplan/60-helios.yaml"
+    run edge.txt "ip -br addr"
+    run edge.txt "ip -d link show ${EDGE_IF}.42 | grep -A1 vlan"
+    return
+  fi
   for c in metier vlan42; do nmcli -t -f NAME con show | grep -qx "$c" && nmcli con del "$c"; done
   nmcli con add type ethernet con-name metier ifname "$EDGE_IF" \
     ipv4.method manual ipv4.addresses 10.42.0.11/24 ipv4.never-default yes ipv6.method disabled
@@ -119,7 +146,7 @@ m2_edge() {
   nmcli con add type vlan con-name vlan42 ifname "${EDGE_IF}.42" dev "$EDGE_IF" id 42 \
     ipv4.method manual ipv4.addresses 10.42.42.11/24 ipv4.never-default yes ipv6.method disabled
   nmcli con up vlan42
-  ip -br addr
+  run edge.txt "ip -br addr"
 }
 
 m2_core() {
