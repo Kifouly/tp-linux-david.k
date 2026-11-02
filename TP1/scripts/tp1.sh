@@ -327,7 +327,7 @@ vals = {
  "SEC_APRES": first(r"Overall exposure level for \S+: (.*)$", sp),
  "RC_OK": first(r"rc_ok=(\d+)", rc), "RC_VERROU": first(r"rc_verrou=(\d+)", rc),
  "RC_ABSENT": first(r"rc_source_absente=(\d+)", rc),
- "PING_BASCULE": first(r"^(\d+ packets transmitted.*)$", pg),
+ "PING_BASCULE": first(r"^(\d+ (?:packets transmitted|paquets transmis).*)$", pg),
 }
 f = tp / "RAPPORT.md"; t = f.read_text()
 for k, v in vals.items():

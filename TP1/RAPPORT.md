@@ -72,6 +72,8 @@ Après :
 
 Chronogrammes : `captures/boot-avant.svg`, `captures/boot-apres.svg`.
 
+**Analyse.** Le boot passe de 1 min 54,5 s à 1 min 42,3 s (−12 s, surtout côté userspace : 1 min 28 s → 1 min 18 s). Sur cette VM, l'unité la plus pénalisante n'est pas `NetworkManager-wait-online` mais `kdump.service` (1 min 10,6 s puis 43,7 s) : elle charge le noyau de capture pour les crash dumps. Les lignes `dev-*.device` de 23 à 34 s ne sont pas des unités « lentes ». Elles indiquent seulement *quand* le disque virtuel a été vu par udev, ce qui dépend de l'hôte VirtualBox. Pour gagner encore 40 à 70 s, il faudrait `systemctl disable kdump` (acceptable sur une VM de labo, à éviter en production où l'on veut un dump après un plantage noyau). Je ne l'ai pas fait car l'énoncé ne le demande pas.
+
 **Unités désactivées et justification**
 
 | Unité | Action | Justification |
@@ -151,7 +153,11 @@ Le mode 802.3ad (LACP) agrège les liens en actif/actif mais nécessite un commu
 
 **Bascule** (`captures/bascule-bond.txt`) : avant la coupure `Currently Active Slave: enp0s9` ; après `VBoxManage controlvm srv-core setlinkstate3 off`, `enp0s9` passe `MII Status: down` et le bond bascule sur `enp0s10`. Au retour du lien, `primary` fait revenir sur `enp0s9`.
 
-Bilan du ping pendant le test : `_(non mesure)_`
+Bilan du ping pendant le test (`ping -i 0.5 -c 80 10.42.0.11`, coupure puis rétablissement du câble de l'adaptateur 3) : `80 paquets transmis, 77 reçus, 3.75% packet loss` (`captures/bascule-ping.txt`).
+
+Le journal noyau montre la bascule : `bond0: (slave enp0s9): link status definitely down, disabling slave` puis `making interface the new active one` pour `enp0s10` (`captures/ecrans/10-*.jpg`). Après rétablissement, `primary_reselect always` fait revenir le bond sur `enp0s9` (`captures/ecrans/11-*.jpg`).
+
+**3 requêtes perdues, une de plus que la cible de 2.** Sans VBoxManage sur l'hôte, j'ai coupé le lien depuis le menu *Périphériques › Réseau › Connecter la carte réseau 3* de la fenêtre VM. La perte est cumulée sur les **deux** bascules : la coupure (enp0s9 → enp0s10) et le retour sur le primaire (enp0s10 → enp0s9). `fail_over_mac=active` impose à srv-edge de réapprendre la MAC dans son cache ARP à chaque bascule. Pour rester sous 2 pertes par bascule, on peut ajouter `num_grat_arp=3` (ARP gratuits envoyés à la bascule) ou `primary_reselect=failure` pour éviter le second basculement au retour du lien.
 
 ### 2.3 VLAN 802.1Q 42
 
@@ -219,14 +225,35 @@ Timer : `OnCalendar=*-*-* 02:30:00`, `RandomizedDelaySec=120` (décalage aléato
 
 ## Critères de réussite
 
-Vérifiés par `./scripts/tp1.sh collecte` → `captures/criteres.txt`.
+Vérifiés sur srv-core2 par `./scripts/tp1.sh collecte` → `captures/criteres.txt`.
 
-- [ ] `helios-collect.service` enabled et survit à `kill -9`
-- [ ] `MemoryMax=100663296` sans modifier l'unit d'origine
-- [ ] `helios.target` dépend de `helios-collect.service`
-- [ ] Bond : deux ports `MII Status: up` + un `Active Slave`
-- [ ] Coupure de l'adaptateur 3 : ≤ 2 requêtes ICMP perdues
-- [ ] `ip route get … from 10.42.42.10` → `bond0.42` ; sans `from` → `enp0s3`
-- [ ] Réseau persistant après `reboot`
-- [ ] Script : rc 2 (verrou) et rc 3 (source absente)
-- [ ] `list-timers` : `NEXT` cohérent avec 02:30
+| Critère | Résultat | Preuve |
+|---|---|---|
+| `helios-collect.service` enabled et survit à `kill -9` | ✅ PID 26962 tué → relancé en 5 s (PID 28222, `NRestarts=1`) | `kill9.txt` |
+| `MemoryMax=100663296` sans modifier l'unit d'origine | ✅ via drop-in `override.conf` | `dropin.txt` |
+| `helios.target` dépend de `helios-collect.service` | ✅ | `target.txt`, `criteres.txt` |
+| Bond : deux ports `MII Status: up` + un `Active Slave` | ✅ `enp0s9` actif, `enp0s10` en secours | `bond-etat.txt`, `ecrans/11` |
+| Coupure de l'adaptateur 3 : ≤ 2 requêtes ICMP perdues | ⚠️ 3 perdues sur 80 (coupure **et** retour cumulés, voir 2.2) | `bascule-ping.txt`, `ecrans/10` |
+| `ip route get … from 10.42.42.10` → `bond0.42` ; sans `from` → `enp0s3` | ✅ | `routage.txt`, `ecrans/09` |
+| Réseau persistant après `reboot` | ✅ bond0, bond0.42, règle 100 et table `transport` présents | `reseau-apres-reboot.txt` |
+| Script : rc 2 (verrou) et rc 3 (source absente) | ✅ 0 / 2 / 3 | `archive-rc.txt`, `ecrans/12` |
+| `list-timers` : `NEXT` cohérent avec 02:30 | ✅ `Tue 2026-11-03 02:31:46` (02:30 + `RandomizedDelaySec`) | `timer.txt`, `ecrans/12` |
+| Score `systemd-analyze security` amélioré | ✅ 5.3 MEDIUM → 0.7 SAFE | `security-*.txt` |
+
+## Captures d'écran (`captures/ecrans/`)
+
+| Fichier | Moment |
+|---|---|
+| `00-*` | VM d'origine : une seule carte NAT |
+| `01-*`, `02-*` | srv-core : adaptateurs 3 et 4 sur `helios-lan` |
+| `03-*` | srv-edge : adaptateur 3 sur `helios-lan` |
+| `04-*`, `05-*` | srv-edge : netplan, IP métier et VLAN 42 |
+| `06-*` | srv-core2 câblée sur `helios-lan` |
+| `07-*` | Priorités : `nice`, `renice`, `ionice`, `chrt` |
+| `08-*` | `tcpdump` : trames 802.1Q `vlan 42` sur `bond0` |
+| `09-*` | Règle `from 10.42.42.10 lookup transport` et `ip route get` |
+| `10-*` | Bascule du bond : `enp0s9` down → `enp0s10` actif |
+| `11-*` | Retour sur le lien primaire `enp0s9` |
+| `12-*` | Codes retour 0/2/3, prochain déclenchement du timer, archives |
+| `14-*` | Bonus : path unit déclenchée par un dépôt dans l'inbox |
+| `15-*` | Synthèse `collecte` : boot avant/après, scores sécurité |
