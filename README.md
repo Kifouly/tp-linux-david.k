@@ -3,7 +3,7 @@
 | TP | Sujet | Rendu |
 |---|---|---|
 | [TP1](TP1/RENDU.pdf) — [rendu (PDF, 5 p.)](TP1/RENDU.pdf) · [rapport détaillé](TP1/RAPPORT.md) | systemd, réseau avancé (bond, VLAN, policy routing), automatisation | `TP1/` |
-| TP2 — `TP2/scripts/tp2.sh` | comptes, politique d'authentification, setgid/sticky/umask, ACL POSIX, sudo | `TP2/` |
+| [TP2](TP2/RENDU.pdf) — [rendu (PDF, 5 p.)](TP2/RENDU.pdf) · [rapport détaillé](TP2/RAPPORT.md) | comptes, politique d'authentification, setgid/sticky/umask, ACL POSIX, sudo | `TP2/` |
 
 ## Arborescence TP1
 
@@ -40,3 +40,14 @@ git add -A && git commit -m "TP1 : preuves et rapport" && git push
 ```
 
 Le push HTTPS demande un *personal access token* GitHub à la place du mot de passe.
+
+## Dérouler le TP2
+
+Sur `srv-core`, en root, dans le même dépôt :
+
+```bash
+cd /root/tp && git pull && cd TP2 && chmod +x scripts/tp2.sh
+./scripts/tp2.sh m1 ; ./scripts/tp2.sh m2 ; ./scripts/tp2.sh m3 ; ./scripts/tp2.sh m4
+./scripts/tp2.sh bonus ; ./scripts/tp2.sh collecte
+git add -A && git commit -m "TP2 : preuves" && git push
+```

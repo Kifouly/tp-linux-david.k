@@ -200,7 +200,7 @@ m4() {
   run m4-sudoreplay.txt "sudoreplay -l"
   run m4-sudoreplay.txt "sudoreplay -l user julien"
   TSID="$(sudoreplay -l user julien | grep 'systemctl restart helios' | tail -1 | sed -n 's/.*TSID=\([^ ;]*\).*/\1/p')"
-  run m4-sudoreplay.txt "timeout 20 sudoreplay -m 0.2 $TSID"
+  run m4-sudoreplay.txt "LC_ALL=C timeout 20 sudoreplay -m 0.2 $TSID"
   run m4-sudoreplay.txt "tail -5 /var/log/sudo-helios.log ; journalctl -t sudo -n 10 --no-pager"
 
   titre "4.3 Regle laxiste : evasion de shell via sudo vim"
@@ -243,7 +243,7 @@ collecte() {
   ls /root/acl-transport-*.txt &>/dev/null && cp /root/acl-transport-*.txt "$CFG/"
   : > "$CAP/criteres.txt"
   run criteres.txt "chage -l julien | grep -E 'Maximum|maximum|warning|avertissement'"
-  run criteres.txt "grep -E 'shorter|court' $CAP/m1-mdp-faible.txt | head -2"
+  run criteres.txt "grep -E 'shorter|court|moins de' $CAP/m1-mdp-faible.txt | head -2"
   run criteres.txt "grep -E 'nadia|rc=' $CAP/m1-faillock.txt | head -12"
   run criteres.txt "ls -l $T/tournee-tarek.csv /srv/helios/projets/temoin/y"
   run criteres.txt "grep -E 'rc=' $CAP/m2-sticky.txt"
