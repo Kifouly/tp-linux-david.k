@@ -1,0 +1,19 @@
+$ su - nadia -c 'umask ; touch /tmp/u1 ; mkdir /tmp/d1 ; ls -ld /tmp/u1 /tmp/d1'
+0027
+drwxr-x---. 2 nadia transport 6  3 nov.  14:28 /tmp/d1
+-rw-r-----. 1 nadia transport 0  3 nov.  14:28 /tmp/u1
+
+$ su - nadia -c 'umask 002 ; touch /tmp/u2 ; mkdir /tmp/d2 ; ls -ld /tmp/u2 /tmp/d2'
+drwxrwxr-x. 2 nadia transport 6  3 nov.  14:28 /tmp/d2
+-rw-rw-r--. 1 nadia transport 0  3 nov.  14:28 /tmp/u2
+
+$ su - nadia -c 'umask 077 ; touch /tmp/u3 ; ls -l /tmp/u3'
+-rw-------. 1 nadia transport 0  3 nov.  14:28 /tmp/u3
+
+$ su - nadia -c 'umask ; touch /srv/helios/projets/transport/partage.txt ; ls -l /srv/helios/projets/transport/partage.txt'
+0002
+-rw-rw-r--. 1 nadia transport 0  3 nov.  14:28 /srv/helios/projets/transport/partage.txt
+
+$ su - audit-ext -c 'umask'
+0027
+

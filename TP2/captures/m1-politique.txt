@@ -1,0 +1,32 @@
+$ grep -E '^(PASS_|UMASK|USERGROUPS_ENAB|CREATE_HOME)' /etc/login.defs
+UMASK           027
+PASS_MAX_DAYS   90
+PASS_MIN_DAYS   1
+PASS_WARN_AGE   14
+USERGROUPS_ENAB yes
+CREATE_HOME	yes
+
+$ cat /etc/security/pwquality.conf.d/50-helios.conf
+# /etc/security/pwquality.conf.d/50-helios.conf
+minlen = 12
+minclass = 3
+maxrepeat = 3
+dictcheck = 1
+usercheck = 1
+enforce_for_root
+
+$ authselect current
+ID du Profil : sssd
+Fonctionnalités activées :
+- with-fingerprint
+- with-silent-lastlog
+
+$ authselect current | grep -i faillock
+- with-faillock
+
+$ grep -Ev '^\s*(#|$)' /etc/security/faillock.conf
+audit
+deny = 5
+fail_interval = 900
+unlock_time = 600
+

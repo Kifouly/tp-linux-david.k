@@ -1,0 +1,17 @@
+$ ls -ld /srv/helios/projets/transport /srv/helios/projets/temoin
+drwxrwx---. 2 julien transport 6  3 nov.  14:28 /srv/helios/projets/temoin
+drwxrws---. 2 julien transport 6  3 nov.  14:28 /srv/helios/projets/transport
+
+$ su - nadia -c 'touch /srv/helios/projets/transport/tournee-nadia.csv /srv/helios/projets/temoin/x ; ls -l /srv/helios/projets/transport/ /srv/helios/projets/temoin/'
+/srv/helios/projets/temoin/:
+total 0
+-rw-r-----. 1 nadia transport 0  3 nov.  14:28 x
+
+/srv/helios/projets/transport/:
+total 0
+-rw-r-----. 1 nadia transport 0  3 nov.  14:28 tournee-nadia.csv
+
+$ su - tarek -c 'touch /srv/helios/projets/transport/tournee-tarek.csv /srv/helios/projets/temoin/y ; ls -l /srv/helios/projets/transport/tournee-tarek.csv /srv/helios/projets/temoin/y'
+-rw-r-----. 1 tarek telemetry 0  3 nov.  14:28 /srv/helios/projets/temoin/y
+-rw-r-----. 1 tarek transport 0  3 nov.  14:28 /srv/helios/projets/transport/tournee-tarek.csv
+

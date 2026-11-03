@@ -1,0 +1,51 @@
+$ wc -l /root/acl-transport-2026-11-03.txt
+78 /root/acl-transport-2026-11-03.txt
+
+$ setfacl -R -b transport ; getfacl transport | head
+# file: transport
+# owner: julien
+# group: transport
+# flags: -s-
+user::rwx
+group::rwx
+other::---
+
+
+$ setfacl --restore=/root/acl-transport-2026-11-03.txt ; getfacl transport | head -12
+# file: transport
+# owner: julien
+# group: transport
+# flags: -s-
+user::rwx
+user:audit-ext:r-x
+group::rwx
+mask::rwx
+other::---
+default:user::rwx
+default:user:audit-ext:r--
+default:group::rwx
+
+$ cp -a transport transport-copie && getfacl transport-copie | head -8
+# file: transport-copie
+# owner: julien
+# group: transport
+# flags: -s-
+user::rwx
+user:audit-ext:r-x
+group::rwx
+mask::rwx
+
+$ cp -r transport transport-copie2 && getfacl transport-copie2 | head -8
+# file: transport-copie2
+# owner: root
+# group: root
+user::rwx
+group::r-x
+other::---
+
+
+$ tar --acls --xattrs -czf /root/transport.tgz transport ; tar --acls --xattrs -tvf /root/transport.tgz | head -3
+drwxrws---+ julien/transport  0 2026-11-03 14:33 transport/
+-rw-r-----+ nadia/transport   0 2026-11-03 14:28 transport/tournee-nadia.csv
+-rw-r-----+ tarek/transport   0 2026-11-03 14:28 transport/tournee-tarek.csv
+

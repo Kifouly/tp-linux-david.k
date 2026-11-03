@@ -1,0 +1,109 @@
+$ mount | grep ' / ' ; xfs_info / | head -2
+/dev/mapper/rl-root on / type xfs (rw,relatime,seclabel,attr2,inode64,logbufs=8,logbsize=32k,noquota)
+meta-data=/dev/mapper/rl-root    isize=512    agcount=4, agsize=1113856 blks
+         =                       sectsz=512   attr=2, projid32bit=1
+
+$ getfacl /srv/helios/projets/transport
+getfacl : suppression du premier « / » des noms de chemins absolus
+# file: srv/helios/projets/transport
+# owner: julien
+# group: transport
+# flags: -s-
+user::rwx
+group::rwx
+other::---
+
+
+$ getfacl /srv/helios/projets/transport ; ls -ld /srv/helios/projets/transport
+getfacl : suppression du premier « / » des noms de chemins absolus
+# file: srv/helios/projets/transport
+# owner: julien
+# group: transport
+# flags: -s-
+user::rwx
+user:audit-ext:r-x
+group::rwx
+mask::rwx
+other::---
+
+drwxrws---+ 2 julien transport 75  3 nov.  14:28 /srv/helios/projets/transport
+
+$ su - audit-ext -c 'ls -l /srv/helios/projets/transport/ ; cat /srv/helios/projets/transport/tournee-nadia.csv'
+total 0
+-rw-rw-r--+ 1 nadia transport 0  3 nov.  14:28 partage.txt
+-rw-r-----+ 1 nadia transport 0  3 nov.  14:28 tournee-nadia.csv
+-rw-r-----+ 1 tarek transport 0  3 nov.  14:28 tournee-tarek.csv
+
+$ su - audit-ext -c 'touch /srv/helios/projets/transport/interdit'
+touch: impossible de faire un touch '/srv/helios/projets/transport/interdit': Permission non accordée
+-> rc=1 (attendu !=0)
+
+$ su - nadia -c 'touch /srv/helios/projets/transport/nouvelle.csv ; ls -l /srv/helios/projets/transport/nouvelle.csv' ; getfacl /srv/helios/projets/transport/nouvelle.csv
+-rw-rw-r--. 1 nadia transport 0  3 nov.  14:33 /srv/helios/projets/transport/nouvelle.csv
+getfacl : suppression du premier « / » des noms de chemins absolus
+# file: srv/helios/projets/transport/nouvelle.csv
+# owner: nadia
+# group: transport
+user::rw-
+group::rw-
+other::r--
+
+
+$ su - audit-ext -c 'cat /srv/helios/projets/transport/nouvelle.csv'
+-> rc=0 (attendu constat)
+
+$ getfacl /srv/helios/projets/transport
+getfacl : suppression du premier « / » des noms de chemins absolus
+# file: srv/helios/projets/transport
+# owner: julien
+# group: transport
+# flags: -s-
+user::rwx
+user:audit-ext:r-x
+group::rwx
+mask::rwx
+other::---
+default:user::rwx
+default:user:audit-ext:r--
+default:group::rwx
+default:group:transport:rwx
+default:mask::rwx
+default:other::---
+
+
+$ su - nadia -c 'touch /srv/helios/projets/transport/tournee-j2.csv ; mkdir -p /srv/helios/projets/transport/semaine-41'
+
+$ getfacl /srv/helios/projets/transport/tournee-j2.csv ; getfacl /srv/helios/projets/transport/semaine-41
+getfacl : suppression du premier « / » des noms de chemins absolus
+# file: srv/helios/projets/transport/tournee-j2.csv
+# owner: nadia
+# group: transport
+user::rw-
+user:audit-ext:r--
+group::rwx	#effective:rw-
+group:transport:rwx	#effective:rw-
+mask::rw-
+other::---
+
+getfacl : suppression du premier « / » des noms de chemins absolus
+# file: srv/helios/projets/transport/semaine-41
+# owner: nadia
+# group: transport
+# flags: -s-
+user::rwx
+user:audit-ext:r--
+group::rwx
+group:transport:rwx
+mask::rwx
+other::---
+default:user::rwx
+default:user:audit-ext:r--
+default:group::rwx
+default:group:transport:rwx
+default:mask::rwx
+default:other::---
+
+
+$ su - audit-ext -c 'cat /srv/helios/projets/transport/tournee-j2.csv'
+-> rc=0 (attendu 0)
+

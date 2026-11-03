@@ -1,0 +1,30 @@
+$ sudoreplay -l
+nov.  3 14:37:00 2026 : julien : HOST=srv-core ; CWD=/home/julien ; USER=root ; TSID=000001 ; COMMAND=/usr/bin/systemctl restart helios-collect.service
+nov.  3 14:37:01 2026 : julien : HOST=srv-core ; CWD=/home/julien ; USER=helios ; TSID=000002 ; COMMAND=/usr/bin/cat /var/lib/helios/telemetry.csv
+nov.  3 14:37:02 2026 : julien : HOST=srv-core ; CWD=/home/julien ; USER=root ; TSID=000003 ; COMMAND=/usr/bin/journalctl -u helios-collect.service -n 5 --no-pager
+
+$ sudoreplay -l user julien
+nov.  3 14:37:00 2026 : julien : HOST=srv-core ; CWD=/home/julien ; USER=root ; TSID=000001 ; COMMAND=/usr/bin/systemctl restart helios-collect.service
+nov.  3 14:37:01 2026 : julien : HOST=srv-core ; CWD=/home/julien ; USER=helios ; TSID=000002 ; COMMAND=/usr/bin/cat /var/lib/helios/telemetry.csv
+nov.  3 14:37:02 2026 : julien : HOST=srv-core ; CWD=/home/julien ; USER=root ; TSID=000003 ; COMMAND=/usr/bin/journalctl -u helios-collect.service -n 5 --no-pager
+
+$ timeout 20 sudoreplay -m 0.2 000001
+sudoreplay: attente maximum invalide : 0.2
+
+$ tail -5 /var/log/sudo-helios.log ; journalctl -t sudo -n 10 --no-pager
+    COMMAND=/bin/systemctl restart sshd
+Nov  3 14:37:01 : julien : PWD=/home/julien ; USER=helios ; TSID=000002 ;
+    COMMAND=/usr/bin/cat /var/lib/helios/telemetry.csv
+Nov  3 14:37:02 : julien : PWD=/home/julien ; USER=root ; TSID=000003 ;
+    COMMAND=/usr/bin/journalctl -u helios-collect.service -n 5 --no-pager
+nov. 03 14:37:00 srv-core sudo[6907]: pam_unix(sudo:session): session opened for user root(uid=0) by dav(uid=5100)
+nov. 03 14:37:00 srv-core sudo[6907]: pam_unix(sudo:session): session closed for user root
+nov. 03 14:37:01 srv-core sudo[6958]:   julien : command not allowed ; PWD=/home/julien ; USER=root ; COMMAND=/bin/systemctl restart sshd
+nov. 03 14:37:01 srv-core sudo[7003]:   julien : PWD=/home/julien ; USER=helios ; TSID=000002 ; COMMAND=/usr/bin/cat /var/lib/helios/telemetry.csv
+nov. 03 14:37:01 srv-core sudo[7003]: pam_unix(sudo:session): session opened for user helios(uid=985) by dav(uid=5100)
+nov. 03 14:37:01 srv-core sudo[7003]: pam_unix(sudo:session): session closed for user helios
+nov. 03 14:37:02 srv-core sudo[7043]:   julien : PWD=/home/julien ; USER=root ; TSID=000003 ; COMMAND=/usr/bin/journalctl -u helios-collect.service -n 5 --no-pager
+nov. 03 14:37:02 srv-core sudo[7043]: pam_unix(sudo:session): session opened for user root(uid=0) by dav(uid=5100)
+nov. 03 14:37:02 srv-core sudo[7043]: pam_unix(sudo:session): session closed for user root
+nov. 03 14:37:03 srv-core sudo[7083]:    nadia : command not allowed ; PWD=/home/nadia ; USER=root ; COMMAND=list
+

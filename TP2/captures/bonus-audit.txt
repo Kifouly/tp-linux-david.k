@@ -1,0 +1,95 @@
+$ awk -F: '$3>=1000 && $3<65534 {print $1, $3, $7}' /etc/passwd
+dav 1000 /bin/bash
+julien 5100 /bin/bash
+nadia 5101 /bin/bash
+tarek 5102 /bin/bash
+audit-ext 5103 /bin/bash
+
+$ awk -F: '($2==""){print $1" SANS MOT DE PASSE"}' /etc/shadow
+
+$ find /srv /home -xdev -perm -0002 -not -type l -printf '%M %p\n' 2>/dev/null
+drwxrwxrwt /srv/helios/depot
+
+$ find /srv /home -xdev -type d -perm -2000 -printf '%M %g %p\n' 2>/dev/null
+drwxrws--- transport /srv/helios/projets/transport
+drwxrws--- transport /srv/helios/projets/transport/semaine-41
+
+$ getfacl -R -s /srv/helios 2>/dev/null | grep -B4 '^user:'
+# file: srv/helios/projets/transport
+# owner: julien
+# group: transport
+# flags: -s-
+user::rwx
+user:audit-ext:r-x
+--
+
+# file: srv/helios/projets/transport/tournee-nadia.csv
+# owner: nadia
+# group: transport
+user::rw-
+user:audit-ext:r--
+--
+
+# file: srv/helios/projets/transport/tournee-tarek.csv
+# owner: tarek
+# group: transport
+user::rw-
+user:audit-ext:r--
+--
+
+# file: srv/helios/projets/transport/partage.txt
+# owner: nadia
+# group: transport
+user::rw-
+user:audit-ext:r--
+--
+
+# file: srv/helios/projets/transport/tournee-j2.csv
+# owner: nadia
+# group: transport
+user::rw-
+user:tarek:rwx
+user:audit-ext:r--
+--
+# file: srv/helios/projets/transport/semaine-41
+# owner: nadia
+# group: transport
+# flags: -s-
+user::rwx
+user:audit-ext:r--
+
+$ for u in julien nadia tarek audit-ext ; do sudo -l -U "$u" ; done
+Entrées Defaults correspondant pour julien sur srv-core :
+    !visiblepw, always_set_home, match_group_by_gid, always_query_group_plugin, env_reset, env_keep="COLORS DISPLAY HOSTNAME HISTSIZE KDEDIR LS_COLORS", env_keep+="MAIL PS1 PS2 QTDIR USERNAME LANG LC_ADDRESS LC_CTYPE", env_keep+="LC_COLLATE LC_IDENTIFICATION LC_MEASUREMENT LC_MESSAGES", env_keep+="LC_MONETARY LC_NAME LC_NUMERIC LC_PAPER LC_TELEPHONE", env_keep+="LC_TIME LC_ALL LANGUAGE LINGUAS _XKB_CHARSET XAUTHORITY", secure_path=/sbin\:/bin\:/usr/sbin\:/usr/bin, timestamp_timeout=5, passwd_tries=2, lecture=always, log_output, iolog_dir=/var/log/sudo-io, logfile=/var/log/sudo-helios.log
+
+L'utilisateur julien peut utiliser les commandes suivantes sur srv-core :
+    (root) /usr/bin/systemctl start helios-collect.service, /usr/bin/systemctl stop helios-collect.service, /usr/bin/systemctl restart helios-collect.service, /usr/bin/systemctl status helios-collect.service, /usr/bin/systemctl start helios.target, /usr/bin/systemctl stop helios.target, /usr/bin/journalctl -u helios-collect.service *, /usr/bin/journalctl -u helios-archive.service *
+    (helios) /usr/bin/ls /var/lib/helios, /usr/bin/cat /var/lib/helios/telemetry.csv
+    (root) !/usr/bin/su, !/usr/bin/sudo, !/usr/bin/passwd root, !/usr/bin/vi, !/usr/bin/vim, !/usr/bin/less, !/usr/bin/find
+Entrées Defaults correspondant pour nadia sur srv-core :
+    !visiblepw, always_set_home, match_group_by_gid, always_query_group_plugin, env_reset, env_keep="COLORS DISPLAY HOSTNAME HISTSIZE KDEDIR LS_COLORS", env_keep+="MAIL PS1 PS2 QTDIR USERNAME LANG LC_ADDRESS LC_CTYPE", env_keep+="LC_COLLATE LC_IDENTIFICATION LC_MEASUREMENT LC_MESSAGES", env_keep+="LC_MONETARY LC_NAME LC_NUMERIC LC_PAPER LC_TELEPHONE", env_keep+="LC_TIME LC_ALL LANGUAGE LINGUAS _XKB_CHARSET XAUTHORITY", secure_path=/sbin\:/bin\:/usr/sbin\:/usr/bin, !sudoedit_checkdir
+
+L'utilisateur nadia peut utiliser les commandes suivantes sur srv-core :
+    (root) sudoedit /srv/helios/projets/transport/*
+L'utilisateur tarek n'est pas autorisé à exécuter sudo sur srv-core.
+L'utilisateur audit-ext n'est pas autorisé à exécuter sudo sur srv-core.
+
+$ chage -l audit-ext
+Last password change					: nov. 03, 2026
+Password expires					: févr. 01, 2027
+Password inactive					: févr. 08, 2027
+Account expires						: nov. 24, 2026
+Minimum number of days between password change		: 1
+Maximum number of days between password change		: 90
+Number of days of warning before password expires	: 14
+
+$ ls -l /etc/sudoers.d/ ; ls -ld /home/*
+total 8
+-r--r-----. 1 root root 1169  3 nov.  14:36 90-helios-ops
+-r--r-----. 1 root root   92  3 nov.  14:37 91-nadia-edition
+drwx------.  4 audit-ext telemetry   92  3 nov.  14:28 /home/audit-ext
+drwx------. 14 dav       dav       4096  2 nov.  19:36 /home/dav
+drwx------.  4 julien    transport   92  3 nov.  14:26 /home/julien
+drwx------.  4 nadia     transport   92  3 nov.  14:26 /home/nadia
+drwx------.  4 tarek     telemetry   92  3 nov.  14:26 /home/tarek
+

@@ -1,0 +1,17 @@
+$ ls -ld /srv/helios/depot
+drwxrwxrwt. 2 root root 6  3 nov.  14:28 /srv/helios/depot
+
+$ su - nadia -c 'echo n > /srv/helios/depot/fichier-nadia' ; ls -l /srv/helios/depot
+total 4
+-rw-r-----. 1 nadia transport 2  3 nov.  14:28 fichier-nadia
+
+$ su - tarek -c 'rm -f /srv/helios/depot/fichier-nadia'
+rm: impossible de supprimer '/srv/helios/depot/fichier-nadia': Opération non permise
+-> rc=1 (attendu !=0)
+
+$ su - tarek -c 'rm -f /srv/helios/depot/fichier-nadia'
+-> rc=0 (attendu 0 (sans sticky))
+
+$ ls -ld /srv/helios/depot
+drwxrwxrwt. 2 root root 6  3 nov.  14:28 /srv/helios/depot
+

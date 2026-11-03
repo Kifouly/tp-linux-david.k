@@ -1,0 +1,54 @@
+$ chage -l julien | grep -E 'Maximum|maximum|warning|avertissement'
+Maximum number of days between password change		: 90
+Number of days of warning before password expires	: 14
+
+$ grep -E 'shorter|court' /root/tp/TP2/captures/m1-mdp-faible.txt | head -2
+
+$ grep -E 'nadia|rc=' /root/tp/TP2/captures/m1-faillock.txt | head -12
+$ su - tarek -c 'for i in $(seq 1 6); do echo mauvais | su - nadia -c id 2>/dev/null ; done'
+$ faillock --user nadia
+nadia:
+$ echo 'Helios-TP2-2026' | su - tarek -c 'su - nadia -c id'
+-> rc=1 (attendu !=0 (compte verrouille))
+$ faillock --user nadia --reset ; faillock --user nadia
+nadia:
+$ echo 'Helios-TP2-2026' | su - tarek -c 'su - nadia -c id'
+Mot de passe : uid=5101(nadia) gid=5000(transport) groupes=5000(transport) contexte=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023
+-> rc=0 (attendu 0 (deverrouille))
+
+$ ls -l /srv/helios/projets/transport/tournee-tarek.csv /srv/helios/projets/temoin/y
+-rw-r-----. 1 tarek telemetry 0  3 nov.  14:28 /srv/helios/projets/temoin/y
+-rw-r-----+ 1 tarek transport 0  3 nov.  14:28 /srv/helios/projets/transport/tournee-tarek.csv
+
+$ grep -E 'rc=' /root/tp/TP2/captures/m2-sticky.txt
+-> rc=1 (attendu !=0)
+-> rc=0 (attendu 0 (sans sticky))
+
+$ ls -l /usr/local/bin/helios-lastlog ; grep 'rc=' /root/tp/TP2/captures/m2-lastlog.txt
+-rwxr-sr-x. 1 root telemetry 17504  3 nov.  14:30 /usr/local/bin/helios-lastlog
+-> rc=1 (attendu !=0)
+-> rc=0 (attendu 0)
+
+$ ls -ld /srv/helios/projets/transport ; getfacl -p /srv/helios/projets/transport | grep default
+drwxrws---+ 3 julien transport 4096  3 nov.  14:37 /srv/helios/projets/transport
+default:user::rwx
+default:user:audit-ext:r--
+default:group::rwx
+default:group:transport:rwx
+default:mask::rwx
+default:other::---
+
+$ su - audit-ext -c 'cat /srv/helios/projets/transport/tournee-j2.csv' >/dev/null && echo 'audit-ext lit tournee-j2.csv'
+audit-ext lit tournee-j2.csv
+
+$ visudo -c
+/etc/sudoers : analyse réussie
+/etc/sudoers.d/90-helios-ops : analyse réussie
+/etc/sudoers.d/91-nadia-edition : analyse réussie
+
+$ sudo -l -U julien | grep -E 'restart|sshd'
+    (root) /usr/bin/systemctl start helios-collect.service, /usr/bin/systemctl stop helios-collect.service, /usr/bin/systemctl restart helios-collect.service, /usr/bin/systemctl status helios-collect.service, /usr/bin/systemctl start helios.target, /usr/bin/systemctl stop helios.target, /usr/bin/journalctl -u helios-collect.service *, /usr/bin/journalctl -u helios-archive.service *
+
+$ sudoreplay -l user julien | wc -l
+3
+

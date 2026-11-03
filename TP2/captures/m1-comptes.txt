@@ -1,0 +1,28 @@
+$ chage -l julien
+Last password change					: nov. 03, 2026
+Password expires					: févr. 01, 2027
+Password inactive					: févr. 08, 2027
+Account expires						: never
+Minimum number of days between password change		: 1
+Maximum number of days between password change		: 90
+Number of days of warning before password expires	: 14
+
+$ getent passwd julien nadia tarek audit-ext
+julien:x:5100:5000:Julien Marty - chef equipe transport:/home/julien:/bin/bash
+nadia:x:5101:5000:Nadia Belkacem - exploitante:/home/nadia:/bin/bash
+tarek:x:5102:5001:Tarek Oualid - analyste telemetrie:/home/tarek:/bin/bash
+audit-ext:x:5103:5001:Auditeur externe - mandat Q4:/home/audit-ext:/bin/bash
+
+$ getent group transport telemetry helios-ops
+transport:x:5000:tarek
+telemetry:x:5001:
+helios-ops:x:5002:julien
+
+$ grep '^transport' /etc/group /etc/gshadow
+/etc/group:transport:x:5000:tarek
+/etc/gshadow:transport:!:julien:tarek
+
+$ su - julien -c 'gpasswd -a nadia transport ; id nadia'
+Adding user nadia to group transport
+uid=5101(nadia) gid=5000(transport) groupes=5000(transport)
+

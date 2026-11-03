@@ -1,0 +1,85 @@
+$ visudo -cf /etc/sudoers.d/90-helios-ops
+/etc/sudoers.d/90-helios-ops : analyse réussie
+
+$ sudo -l -U julien
+Entrées Defaults correspondant pour julien sur srv-core :
+    !visiblepw, always_set_home, match_group_by_gid, always_query_group_plugin, env_reset, env_keep="COLORS DISPLAY HOSTNAME HISTSIZE KDEDIR LS_COLORS", env_keep+="MAIL PS1 PS2 QTDIR USERNAME LANG LC_ADDRESS LC_CTYPE", env_keep+="LC_COLLATE LC_IDENTIFICATION LC_MEASUREMENT LC_MESSAGES", env_keep+="LC_MONETARY LC_NAME LC_NUMERIC LC_PAPER LC_TELEPHONE", env_keep+="LC_TIME LC_ALL LANGUAGE LINGUAS _XKB_CHARSET XAUTHORITY", secure_path=/sbin\:/bin\:/usr/sbin\:/usr/bin, timestamp_timeout=5, passwd_tries=2, lecture=always, log_output, iolog_dir=/var/log/sudo-io, logfile=/var/log/sudo-helios.log
+
+L'utilisateur julien peut utiliser les commandes suivantes sur srv-core :
+    (root) /usr/bin/systemctl start helios-collect.service, /usr/bin/systemctl stop helios-collect.service, /usr/bin/systemctl restart helios-collect.service, /usr/bin/systemctl status helios-collect.service, /usr/bin/systemctl start helios.target, /usr/bin/systemctl stop helios.target, /usr/bin/journalctl -u helios-collect.service *, /usr/bin/journalctl -u helios-archive.service *
+    (helios) /usr/bin/ls /var/lib/helios, /usr/bin/cat /var/lib/helios/telemetry.csv
+    (root) !/usr/bin/su, !/usr/bin/sudo, !/usr/bin/passwd root, !/usr/bin/vi, !/usr/bin/vim, !/usr/bin/less, !/usr/bin/find
+
+$ echo 'Helios-TP2-2026' | su - julien -c 'sudo -S systemctl restart helios-collect.service'
+
+Nous espérons que vous avez reçu de votre administrateur système local
+les consignes traditionnelles. Généralement, elles se concentrent sur ces trois éléments :
+
+    #1) Respectez la vie privée des autres.
+    #2) Réfléchissez avant d'utiliser le clavier.
+    #3) De grands pouvoirs confèrent de grandes responsabilités.
+
+Pour des raisons de sécurité, le mot de passe que vous tapez ne sera pas visible.
+
+[sudo] Mot de passe de julien : -> rc=0 (attendu 0)
+
+$ echo 'Helios-TP2-2026' | su - julien -c 'sudo -S systemctl restart sshd'
+
+Nous espérons que vous avez reçu de votre administrateur système local
+les consignes traditionnelles. Généralement, elles se concentrent sur ces trois éléments :
+
+    #1) Respectez la vie privée des autres.
+    #2) Réfléchissez avant d'utiliser le clavier.
+    #3) De grands pouvoirs confèrent de grandes responsabilités.
+
+Pour des raisons de sécurité, le mot de passe que vous tapez ne sera pas visible.
+
+[sudo] Mot de passe de julien : Désolé, l'utilisateur julien n'est pas autorisé à exécuter « /bin/systemctl restart sshd » en tant que root sur srv-core.
+-> rc=1 (attendu !=0)
+
+$ echo 'Helios-TP2-2026' | su - julien -c 'sudo -S -u helios cat /var/lib/helios/telemetry.csv' | tail -3
+
+Nous espérons que vous avez reçu de votre administrateur système local
+les consignes traditionnelles. Généralement, elles se concentrent sur ces trois éléments :
+
+    #1) Respectez la vie privée des autres.
+    #2) Réfléchissez avant d'utiliser le clavier.
+    #3) De grands pouvoirs confèrent de grandes responsabilités.
+
+Pour des raisons de sécurité, le mot de passe que vous tapez ne sera pas visible.
+
+[sudo] Mot de passe de julien : 2026-11-03T14:36:50+01:00,0.31,540460
+2026-11-03T14:36:55+01:00,0.28,540460
+2026-11-03T14:37:01+01:00,0.26,532540
+
+$ echo 'Helios-TP2-2026' | su - julien -c 'sudo -S journalctl -u helios-collect.service -n 5 --no-pager'
+
+Nous espérons que vous avez reçu de votre administrateur système local
+les consignes traditionnelles. Généralement, elles se concentrent sur ces trois éléments :
+
+    #1) Respectez la vie privée des autres.
+    #2) Réfléchissez avant d'utiliser le clavier.
+    #3) De grands pouvoirs confèrent de grandes responsabilités.
+
+Pour des raisons de sécurité, le mot de passe que vous tapez ne sera pas visible.
+
+[sudo] Mot de passe de julien : nov. 03 14:37:00 srv-core systemd[1]: Stopping Collecteur de telemetrie Helios...
+nov. 03 14:37:00 srv-core systemd[1]: helios-collect.service: Deactivated successfully.
+nov. 03 14:37:00 srv-core systemd[1]: Stopped Collecteur de telemetrie Helios.
+nov. 03 14:37:00 srv-core systemd[1]: helios-collect.service: Consumed 14.067s CPU time.
+nov. 03 14:37:00 srv-core systemd[1]: Started Collecteur de telemetrie Helios.
+
+$ echo 'Helios-TP2-2026' | su - nadia -c 'sudo -S -l'
+
+Nous espérons que vous avez reçu de votre administrateur système local
+les consignes traditionnelles. Généralement, elles se concentrent sur ces trois éléments :
+
+    #1) Respectez la vie privée des autres.
+    #2) Réfléchissez avant d'utiliser le clavier.
+    #3) De grands pouvoirs confèrent de grandes responsabilités.
+
+Pour des raisons de sécurité, le mot de passe que vous tapez ne sera pas visible.
+
+[sudo] Mot de passe de nadia : Désolé, l'utilisateur nadia ne peut pas utiliser sudo sur srv-core.
+-> rc=1 (attendu !=0 (hors groupe))
+

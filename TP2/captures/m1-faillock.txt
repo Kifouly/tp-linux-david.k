@@ -1,0 +1,26 @@
+$ su - tarek -c 'for i in $(seq 1 6); do echo mauvais | su - nadia -c id 2>/dev/null ; done'
+
+$ faillock --user nadia
+nadia:
+When                Type  Source                                           Valid
+2026-11-03 14:26:20 SVC   su-l                                                 V
+2026-11-03 14:26:23 SVC   su-l                                                 V
+2026-11-03 14:26:26 SVC   su-l                                                 V
+2026-11-03 14:26:30 SVC   su-l                                                 V
+2026-11-03 14:26:33 SVC   su-l                                                 V
+
+$ echo 'Helios-TP2-2026' | su - tarek -c 'su - nadia -c id'
+Mot de passe : su: Échec de l’authentification
+-> rc=1 (attendu !=0 (compte verrouille))
+
+$ faillock --user nadia --reset ; faillock --user nadia
+nadia:
+When                Type  Source                                           Valid
+
+$ echo 'Helios-TP2-2026' | su - tarek -c 'su - nadia -c id'
+Mot de passe : uid=5101(nadia) gid=5000(transport) groupes=5000(transport) contexte=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023
+-> rc=0 (attendu 0 (deverrouille))
+
+$ chage -l audit-ext | grep -i 'Account expires\|Le compte expire'
+Account expires						: nov. 24, 2026
+

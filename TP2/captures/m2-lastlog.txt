@@ -1,0 +1,21 @@
+$ ls -l /usr/local/bin/helios-lastlog /var/log/helios/app.log
+-rwxr-sr-x. 1 root telemetry 17504  3 nov.  14:30 /usr/local/bin/helios-lastlog
+-rw-r-----. 1 root telemetry  1281  3 nov.  14:30 /var/log/helios/app.log
+
+$ su - julien -c 'tail -n 3 /var/log/helios/app.log'
+tail: impossible d'ouvrir '/var/log/helios/app.log' en lecture: Permission non accordée
+-> rc=1 (attendu !=0)
+
+$ su - julien -c '/usr/local/bin/helios-lastlog'
+2026-11-03T14:30:23+01:00 INFO trame 21 ok
+2026-11-03T14:30:23+01:00 INFO trame 22 ok
+2026-11-03T14:30:23+01:00 INFO trame 23 ok
+2026-11-03T14:30:23+01:00 INFO trame 24 ok
+2026-11-03T14:30:23+01:00 INFO trame 25 ok
+2026-11-03T14:30:23+01:00 INFO trame 26 ok
+2026-11-03T14:30:23+01:00 INFO trame 27 ok
+2026-11-03T14:30:23+01:00 INFO trame 28 ok
+2026-11-03T14:30:23+01:00 INFO trame 29 ok
+2026-11-03T14:30:23+01:00 INFO trame 30 ok
+-> rc=0 (attendu 0)
+

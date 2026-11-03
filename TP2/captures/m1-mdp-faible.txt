@@ -1,0 +1,12 @@
+$ echo helios | pwscore
+Échec de la vérification de la qualité du mot de passe :
+ Le mot de passe comporte moins de 12 caractères
+
+$ printf '%s\n' 'Helios-TP2-2026' helios helios helios helios helios helios | setsid -w su - julien -c passwd
+Mot de passe actuel : Nouveau mot de passe : MOT DE PASSE INCORRECT : Le mot de passe comporte moins de 12 caractères
+passwd: Erreur de manipulation du jeton d’authentification
+Changement de mot de passe pour l'utilisateur julien.
+
+$ chage -l julien | head -1
+Last password change					: nov. 02, 2026
+
