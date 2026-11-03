@@ -3,6 +3,7 @@
 | TP | Sujet | Rendu |
 |---|---|---|
 | [TP1](TP1/RENDU.pdf) — [rendu (PDF, 5 p.)](TP1/RENDU.pdf) · [rapport détaillé](TP1/RAPPORT.md) | systemd, réseau avancé (bond, VLAN, policy routing), automatisation | `TP1/` |
+| TP2 — `TP2/scripts/tp2.sh` | comptes, politique d'authentification, setgid/sticky/umask, ACL POSIX, sudo | `TP2/` |
 
 ## Arborescence TP1
 
