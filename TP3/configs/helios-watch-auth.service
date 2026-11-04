@@ -1,0 +1,16 @@
+[Unit]
+Description=Helios - detection des echecs d'authentification SSH et blocage de la source
+Documentation=file:/usr/local/sbin/helios-watch-auth.sh
+After=firewalld.service sshd.service
+Wants=firewalld.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/helios-watch-auth.sh
+# rc 2 = une autre instance tient le verrou : ce n'est pas une panne
+SuccessExitStatus=2
+Nice=10
+PrivateTmp=yes
+ProtectHome=yes
+ProtectSystem=full
+NoNewPrivileges=yes

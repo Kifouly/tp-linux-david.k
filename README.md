@@ -4,6 +4,7 @@
 |---|---|---|
 | [TP1](TP1/RENDU.pdf) — [rendu (PDF, 5 p.)](TP1/RENDU.pdf) · [rapport détaillé](TP1/RAPPORT.md) | systemd, réseau avancé (bond, VLAN, policy routing), automatisation | `TP1/` |
 | [TP2](TP2/RENDU.pdf) — [rendu (PDF, 5 p.)](TP2/RENDU.pdf) · [rapport détaillé](TP2/RAPPORT.md) | comptes, politique d'authentification, setgid/sticky/umask, ACL POSIX, sudo | `TP2/` |
+| TP3 — `TP3/scripts/tp3.sh` | firewalld par zone, durcissement sshd, journald/auditd, détection et blocage | `TP3/` |
 
 ## Arborescence TP1
 
@@ -50,4 +51,14 @@ cd /root/tp && git pull && cd TP2 && chmod +x scripts/tp2.sh
 ./scripts/tp2.sh m1 ; ./scripts/tp2.sh m2 ; ./scripts/tp2.sh m3 ; ./scripts/tp2.sh m4
 ./scripts/tp2.sh bonus ; ./scripts/tp2.sh collecte
 git add -A && git commit -m "TP2 : preuves" && git push
+```
+
+## Dérouler le TP3
+
+Prérequis : adaptateur 2 de chaque VM en *réseau privé hôte* (`enp0s8`, 192.168.56.0/24). Dépôt cloné en root sur les deux VM (`/root/tp`). Les étapes alternent entre les deux machines, et chaque étape indique la suivante :
+
+```
+srv-core : m0   srv-edge : e1   srv-core : m1   srv-edge : e2   srv-core : m2a
+srv-edge : e3   srv-core : m2   srv-edge : e4   srv-core : m3a (redémarre)
+srv-core : m3   srv-edge : e5   srv-core : m3b  srv-edge : e6   srv-core : fin
 ```
