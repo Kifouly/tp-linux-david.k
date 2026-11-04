@@ -1,0 +1,62 @@
+$ auditctl -s | grep -E '^enabled' ; tail -1 /etc/audit/rules.d/90-helios.rules
+enabled 1
+-e 1
+
+$ aureport --start this-week --summary -i
+
+Summary Report
+======================
+Range of time in logs: 01/01/1970 01:00:00.000 - 04/11/2026 15:38:09.268
+Selected time for report: 01/11/2026 00:00:00 - 04/11/2026 15:38:09.268
+Number of changes in configuration: 185
+Number of changes to accounts, groups, or roles: 56
+Number of logins: 14
+Number of failed logins: 11
+Number of authentications: 82
+Number of failed authentications: 11
+Number of users: 6
+Number of terminals: 11
+Number of host names: 4
+Number of executables: 72
+Number of commands: 74
+Number of files: 81
+Number of AVC's: 2
+Number of MAC events: 41
+Number of failed syscalls: 10
+Number of anomaly events: 7
+Number of responses to anomaly events: 1
+Number of crypto events: 139
+Number of integrity events: 0
+Number of virt events: 0
+Number of keys: 6
+Number of process IDs: 445
+Number of events: 3461
+
+
+$ aureport --executable --summary -i | head -15
+
+Executable Summary Report
+=================================
+total  file
+=================================
+1169  /usr/lib/systemd/systemd
+251  /usr/bin/su
+249  /usr/libexec/openssh/sshd-session
+146  /usr/bin/python3.9
+127  /usr/libexec/gdm-session-worker
+102  /usr/bin/sudo
+65  /usr/sbin/auditctl
+32  /usr/bin/tee
+22  /usr/lib/systemd/systemd-update-utmp
+22  /usr/sbin/useradd
+
+$ ssh -Q cipher | tr '\n' ' ' ; echo ; ssh -Q kex | tr '\n' ' ' ; echo
+3des-cbc aes128-cbc aes192-cbc aes256-cbc aes128-ctr aes192-ctr aes256-ctr aes128-gcm@openssh.com aes256-gcm@openssh.com chacha20-poly1305@openssh.com 
+diffie-hellman-group1-sha1 diffie-hellman-group14-sha1 diffie-hellman-group14-sha256 diffie-hellman-group16-sha512 diffie-hellman-group18-sha512 diffie-hellman-group-exchange-sha1 diffie-hellman-group-exchange-sha256 ecdh-sha2-nistp256 ecdh-sha2-nistp384 ecdh-sha2-nistp521 curve25519-sha256 curve25519-sha256@libssh.org sntrup761x25519-sha512 sntrup761x25519-sha512@openssh.com mlkem768x25519-sha256 
+
+$ sshd -T | grep -iE '^(ciphers|kexalgorithms|macs|authenticationmethods)'
+ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes256-ctr
+macs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com
+kexalgorithms curve25519-sha256,curve25519-sha256@libssh.org,diffie-hellman-group16-sha512
+authenticationmethods publickey
+

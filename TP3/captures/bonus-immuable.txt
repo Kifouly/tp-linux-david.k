@@ -1,0 +1,28 @@
+$ tail -2 /etc/audit/rules.d/90-helios.rules ; augenrules --load >/dev/null ; auditctl -s | grep -E '^enabled'
+## Bonus : "-e 2" (immuable jusqu'au redemarrage) a ete teste puis remplace par -e 1
+-e 2
+Old style watch rules are slower
+Old style watch rules are slower
+Old style watch rules are slower
+Old style watch rules are slower
+Old style watch rules are slower
+Old style watch rules are slower
+Old style watch rules are slower
+Old style watch rules are slower
+Old style watch rules are slower
+enabled 2
+
+$ auditctl -D
+Error deleting rule (Operation not permitted)
+There was an error while processing parameters
+-> rc=255 (attendu !=0 (regles immuables))
+
+$ auditctl -w /tmp -p w -k essai
+Old style watch rules are slower
+The audit system is in immutable mode, no rule changes allowed
+-> rc=1 (attendu !=0 (regles immuables))
+
+$ tail -1 /etc/audit/rules.d/90-helios.rules ; auditctl -s | grep -E '^enabled'
+-e 1
+enabled 2
+

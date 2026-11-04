@@ -1,0 +1,52 @@
+$ journalctl -u sshd --since '-10min' -g 'Invalid user' --no-pager | tail
+nov. 04 15:31:43 srv-core sshd-session[3897]: Invalid user pirate from 192.168.56.11 port 47108
+nov. 04 15:31:44 srv-core sshd-session[3899]: Invalid user pirate from 192.168.56.11 port 47118
+nov. 04 15:31:44 srv-core sshd-session[3901]: Invalid user pirate from 192.168.56.11 port 47128
+nov. 04 15:31:44 srv-core sshd-session[3903]: Invalid user pirate from 192.168.56.11 port 47140
+nov. 04 15:31:45 srv-core sshd-session[3905]: Invalid user pirate from 192.168.56.11 port 47144
+
+$ systemctl start helios-watch-auth.service ; journalctl -t helios-watch-auth -n 10 --no-pager
+nov. 04 15:32:21 srv-core helios-watch-auth[3949]: ALERTE : 192.168.56.11 bloquee (10 echecs SSH en 10min, seuil 5)
+nov. 04 15:32:21 srv-core helios-watch-auth[3950]: analyse terminee : 1 source(s) en echec, 1 nouveau(x) blocage(s)
+nov. 04 15:34:07 srv-core helios-watch-auth[4049]: analyse terminee : 1 source(s) en echec, 0 nouveau(x) blocage(s)
+nov. 04 15:34:54 srv-core helios-watch-auth[4120]: analyse terminee : 1 source(s) en echec, 0 nouveau(x) blocage(s)
+
+$ firewall-cmd --ipset=helios-blacklist --get-entries ; cat /var/lib/helios/blocked.txt
+192.168.56.11
+192.168.56.11 2026-11-04T15:32:21+01:00 10
+
+$ nft list set inet firewalld helios-blacklist
+table inet firewalld {
+	set helios-blacklist {
+		type ipv4_addr
+		size 65536
+		flags interval
+		elements = { 192.168.56.11 }
+	}
+}
+
+$ journalctl -k -g 'DROP|REJECT' --since '-10min' --no-pager | tail -5
+nov. 04 15:31:45 srv-core kernel: filter_IN_work_REJECT: IN=enp0s8 OUT= MAC=08:00:27:2c:43:bf:08:00:27:89:26:4e:08:00 SRC=192.168.56.11 DST=192.168.56.10 LEN=60 TOS=0x10 PREC=0x00 TTL=64 ID=35697 DF PROTO=TCP SPT=47154 DPT=2242 WINDOW=64240 RES=0x00 SYN URGP=0 
+nov. 04 15:31:45 srv-core kernel: filter_IN_work_REJECT: IN=enp0s8 OUT= MAC=08:00:27:2c:43:bf:08:00:27:89:26:4e:08:00 SRC=192.168.56.11 DST=192.168.56.10 LEN=60 TOS=0x10 PREC=0x00 TTL=64 ID=43228 DF PROTO=TCP SPT=47160 DPT=2242 WINDOW=64240 RES=0x00 SYN URGP=0 
+nov. 04 15:31:45 srv-core kernel: filter_IN_work_REJECT: IN=enp0s8 OUT= MAC=08:00:27:2c:43:bf:08:00:27:89:26:4e:08:00 SRC=192.168.56.11 DST=192.168.56.10 LEN=60 TOS=0x10 PREC=0x00 TTL=64 ID=53475 DF PROTO=TCP SPT=47174 DPT=2242 WINDOW=64240 RES=0x00 SYN URGP=0 
+nov. 04 15:31:45 srv-core kernel: filter_IN_work_REJECT: IN=enp0s8 OUT= MAC=08:00:27:2c:43:bf:08:00:27:89:26:4e:08:00 SRC=192.168.56.11 DST=192.168.56.10 LEN=60 TOS=0x10 PREC=0x00 TTL=64 ID=4441 DF PROTO=TCP SPT=47188 DPT=2242 WINDOW=64240 RES=0x00 SYN URGP=0 
+nov. 04 15:31:45 srv-core kernel: filter_IN_work_REJECT: IN=enp0s8 OUT= MAC=08:00:27:2c:43:bf:08:00:27:89:26:4e:08:00 SRC=192.168.56.11 DST=192.168.56.10 LEN=60 TOS=0x10 PREC=0x00 TTL=64 ID=10411 DF PROTO=TCP SPT=47204 DPT=2242 WINDOW=64240 RES=0x00 SYN URGP=0 
+
+$ /usr/local/sbin/helios-watch-auth.sh
+-> rc=0 (attendu 0)
+
+$ journalctl -t helios-watch-auth -n 3 --no-pager -o cat ; grep -c 'ALERTE' <(journalctl -t helios-watch-auth --since '-15min' -o cat)
+analyse terminee : 1 source(s) en echec, 0 nouveau(x) blocage(s)
+analyse terminee : 1 source(s) en echec, 0 nouveau(x) blocage(s)
+analyse terminee : 1 source(s) en echec, 0 nouveau(x) blocage(s)
+1
+
+$ /usr/local/sbin/helios-watch-auth.sh
+-> rc=2 (attendu 2 (une instance tient le verrou))
+
+$ firewall-cmd --ipset=helios-blacklist --get-entries ; systemctl is-active helios-watch-auth.timer ; systemctl list-timers --all --no-pager | grep -E 'run-|helios-watch'
+
+inactive
+Wed 2026-11-04 15:46:06 CET 10min left    -                           -             run-rea3d7c4295a14850b9cc3abeb367e41b.timer run-rea3d7c4295a14850b9cc3abeb367e41b.service
+-                           -             Wed 2026-11-04 15:34:01 CET 1min 8s ago   helios-watch-auth.timer                     helios-watch-auth.service
+

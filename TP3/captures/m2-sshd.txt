@@ -1,0 +1,15 @@
+$ ls -l /home/sysops/.ssh/authorized_keys
+-rw-------. 1 sysops sysops 97  4 nov.  15:13 /home/sysops/.ssh/authorized_keys
+-> rc=0 (attendu 0600 sysops:sysops)
+
+$ head -3 /etc/ssh/sshd_config.d/10-helios-hardening.conf ; ls /etc/ssh/sshd_config.d/
+# --- Durcissement SSH Helios Logistique --- TP3 BTC2
+Port 2242
+AddressFamily inet
+10-helios-hardening.conf
+50-redhat.conf
+
+$ sshd -t && echo 'syntaxe OK'
+syntaxe OK
+-> rc=0 (attendu 0)
+

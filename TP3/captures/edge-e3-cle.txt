@@ -1,0 +1,16 @@
+$ su - sysops -c 'ssh-keygen -lf ~/.ssh/id_ed25519.pub'
+256 SHA256:sLaiVYzSPxVY/sUiHVOmyIHVwAdu/V+XhZGjL9f/4a4 sysops@srv-edge (ED25519)
+
+$ su - sysops -c 'SSH_ASKPASS=/tmp/askpass.QgLEjh SSH_ASKPASS_REQUIRE=force DISPLAY=none setsid -w ssh-copy-id -o StrictHostKeyChecking=accept-new -i ~/.ssh/id_ed25519.pub sysops@192.168.56.10' 2>&1 | grep -v '^$'
+/usr/bin/ssh-copy-id: INFO: Source of key(s) to be installed: "/home/sysops/.ssh/id_ed25519.pub"
+/usr/bin/ssh-copy-id: INFO: attempting to log in with the new key(s), to filter out any that are already installed
+/usr/bin/ssh-copy-id: INFO: 1 key(s) remain to be installed -- if you are prompted now it is to install the new keys
+Number of key(s) added: 1
+Now try logging into the machine, with:   "ssh -o 'StrictHostKeyChecking=accept-new' 'sysops@192.168.56.10'"
+and check to make sure that only the key(s) you wanted were added.
+
+$ su - sysops -c "ssh -o BatchMode=yes sysops@192.168.56.10 'hostname ; id'"
+srv-core
+uid=5104(sysops) gid=5104(sysops) groupes=5104(sysops),983(ssh-admins) contexte=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023
+-> rc=0 (attendu 0 (par cle, sans mot de passe))
+

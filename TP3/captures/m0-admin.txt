@@ -1,0 +1,16 @@
+$ ip -br addr
+lo               UNKNOWN        127.0.0.1/8 ::1/128 
+enp0s3           UP             10.0.2.15/24 fd17:625c:f037:2:a00:27ff:fe16:ef5a/64 fe80::a00:27ff:fe16:ef5a/64 
+enp0s8           UP             192.168.56.10/24 
+enp0s9           UP             
+enp0s10          UP             
+bond0            UP             10.42.0.10/24 
+bond0.42@bond0   UP             10.42.42.10/24 
+
+$ ping -c 2 -W 2 192.168.56.1
+PING 192.168.56.1 (192.168.56.1) 56(84) octets de données.
+
+--- statistiques ping 192.168.56.1 ---
+2 paquets transmis, 0 reçus, 100% packet loss, time 1118ms
+
+

@@ -1,0 +1,20 @@
+$ for i in $(seq 1 10); do ssh -p 2242 -o BatchMode=yes -o StrictHostKeyChecking=no -o ConnectTimeout=3 pirate@192.168.56.10 true 2>/dev/null ; echo "essai $i rc=$?" ; done
+essai 1 rc=255
+essai 2 rc=255
+essai 3 rc=255
+essai 4 rc=255
+essai 5 rc=255
+essai 6 rc=255
+essai 7 rc=255
+essai 8 rc=255
+essai 9 rc=255
+essai 10 rc=255
+
+$ nc -zv -w3 192.168.56.10 2242
+nc: connect to 192.168.56.10 port 2242 (tcp) timed out: Operation now in progress
+-> rc=1 (attendu !=0 (bloquee par l'ipset))
+
+$ su - sysops -c "ssh -p 2242 -o BatchMode=yes -o ConnectTimeout=5 sysops@192.168.56.10 true"
+ssh: connect to host 192.168.56.10 port 2242: Connection timed out
+-> rc=255 (attendu !=0 (bloquee par l'ipset))
+

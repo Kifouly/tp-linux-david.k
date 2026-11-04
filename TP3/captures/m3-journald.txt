@@ -1,0 +1,18 @@
+$ journalctl --list-boots --no-pager
+IDX BOOT ID                          FIRST ENTRY                 LAST ENTRY
+  0 00e06609d7c34028846f44a1350036ba Wed 2026-11-04 14:45:35 CET Wed 2026-11-04 15:18:51 CET
+
+$ ls -ld /var/log/journal/$(cat /etc/machine-id) ; ls /var/log/journal/$(cat /etc/machine-id) | head
+drwxr-xr-x. 2 root root 39  4 nov.  15:20 /var/log/journal/00ae56862a31496bbe7b419119b26956
+fss
+system.journal
+
+$ journalctl --disk-usage ; journalctl --verify 2>&1 | tail -5
+Archived and active journals take up 8.0M in the file system.
+PASS: /var/log/journal/00ae56862a31496bbe7b419119b26956/system.journal
+
+$ journalctl --list-boots --no-pager
+IDX BOOT ID                          FIRST ENTRY                 LAST ENTRY
+ -1 00e06609d7c34028846f44a1350036ba Wed 2026-11-04 14:45:35 CET Wed 2026-11-04 15:22:14 CET
+  0 2f26508279884363acde8aee32848f36 Wed 2026-11-04 15:23:11 CET Wed 2026-11-04 15:29:19 CET
+

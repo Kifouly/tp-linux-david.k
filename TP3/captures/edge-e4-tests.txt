@@ -1,0 +1,53 @@
+$ nmap -Pn -p 22,2242,10051 192.168.56.10
+Starting Nmap 7.94SVN ( https://nmap.org ) at 2026-11-04 14:17 UTC
+Nmap scan report for 192.168.56.10
+Host is up (0.024s latency).
+
+PORT      STATE    SERVICE
+22/tcp    filtered ssh
+2242/tcp  open     foliocorp
+10051/tcp filtered zabbix-trapper
+MAC Address: 08:00:27:2C:43:BF (Oracle VirtualBox virtual NIC)
+
+Nmap done: 1 IP address (1 host up) scanned in 2.32 seconds
+
+$ nc -zv -w2 192.168.56.10 22
+nc: connect to 192.168.56.10 port 22 (tcp) failed: No route to host
+-> rc=1 (attendu !=0 (1. ancien port))
+
+$ su - sysops -c "ssh -p 2242 -o BatchMode=yes -o StrictHostKeyChecking=accept-new sysops@192.168.56.10 'hostname; id -nG'"
+*** Serveur Helios Logistique - acces strictement reserve ***
+Toute connexion est journalisee.
+srv-core
+sysops ssh-admins
+-> rc=0 (attendu 0 (2. sysops par cle))
+
+$ su - sysops -c "ssh -p 2242 -o BatchMode=yes root@192.168.56.10 id"
+*** Serveur Helios Logistique - acces strictement reserve ***
+Toute connexion est journalisee.
+root@192.168.56.10: Permission denied (publickey).
+-> rc=255 (attendu !=0 (3. root))
+
+$ su - sysops -c "ssh -p 2242 -o BatchMode=yes -o PubkeyAuthentication=no -o PreferredAuthentications=password sysops@192.168.56.10 true"
+*** Serveur Helios Logistique - acces strictement reserve ***
+Toute connexion est journalisee.
+sysops@192.168.56.10: Permission denied (publickey).
+-> rc=255 (attendu !=0 (4. mot de passe))
+
+$ su - sysops -c "ssh -p 2242 -o BatchMode=yes nadia@192.168.56.10 true"
+*** Serveur Helios Logistique - acces strictement reserve ***
+Toute connexion est journalisee.
+nadia@192.168.56.10: Permission denied (publickey).
+-> rc=255 (attendu !=0 (5. nadia hors ssh-admins))
+
+$ su - sysops -c "ssh -p 2242 -o BatchMode=yes -N -L 9999:localhost:10051 sysops@192.168.56.10 & sleep 3 ; nc -zv -w2 127.0.0.1 9999 ; sleep 1 ; kill \$! 2>/dev/null" ; echo '6. tunnel : refus cote serveur (voir journal sshd)'
+*** Serveur Helios Logistique - acces strictement reserve ***
+Toute connexion est journalisee.
+Connection to 127.0.0.1 9999 port [tcp/*] succeeded!
+channel 2: open failed: administratively prohibited: open failed
+6. tunnel : refus cote serveur (voir journal sshd)
+
+$ su - sysops -c "ssh -p 2242 -o BatchMode=yes -o KexAlgorithms=diffie-hellman-group14-sha1 sysops@192.168.56.10 true"
+Unable to negotiate with 192.168.56.10 port 2242: no matching key exchange method found. Their offer: curve25519-sha256,curve25519-sha256@libssh.org,diffie-hellman-group16-sha512,ext-info-s,kex-strict-s-v00@openssh.com
+-> rc=255 (attendu !=0 (7. KEX SHA-1))
+

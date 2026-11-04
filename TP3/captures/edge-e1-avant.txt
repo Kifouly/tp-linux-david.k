@@ -1,0 +1,25 @@
+$ ip -br addr show enp0s8 ; ping -c 2 -W 2 192.168.56.10
+enp0s8           UP             192.168.56.11/24 fe80::a00:27ff:fe89:264e/64 
+PING 192.168.56.10 (192.168.56.10) 56(84) bytes of data.
+64 bytes from 192.168.56.10: icmp_seq=1 ttl=64 time=11.7 ms
+64 bytes from 192.168.56.10: icmp_seq=2 ttl=64 time=2.86 ms
+
+--- 192.168.56.10 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1002ms
+rtt min/avg/max/mdev = 2.856/7.292/11.728/4.436 ms
+
+$ nmap -Pn -p 22,80,111,9090,10051 192.168.56.10
+Starting Nmap 7.94SVN ( https://nmap.org ) at 2026-11-04 14:02 UTC
+Nmap scan report for 192.168.56.10
+Host is up (0.021s latency).
+
+PORT      STATE  SERVICE
+22/tcp    open   ssh
+80/tcp    closed http
+111/tcp   closed rpcbind
+9090/tcp  closed zeus-admin
+10051/tcp closed zabbix-trapper
+MAC Address: 08:00:27:2C:43:BF (Oracle VirtualBox virtual NIC)
+
+Nmap done: 1 IP address (1 host up) scanned in 1.09 seconds
+

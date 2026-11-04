@@ -1,0 +1,55 @@
+$ firewall-cmd --get-default-zone ; firewall-cmd --get-active-zones
+drop
+drop
+  interfaces: enp0s3 enp0s10 enp0s9
+internal
+  interfaces: bond0.42 bond0
+work
+  interfaces: enp0s8
+  sources: 192.168.56.0/24
+
+$ grep -E '^\$|rc=|attendu' /root/tp/TP3/captures/edge-e4-tests.txt 2>/dev/null | head -30
+$ nmap -Pn -p 22,2242,10051 192.168.56.10
+$ nc -zv -w2 192.168.56.10 22
+-> rc=1 (attendu !=0 (1. ancien port))
+$ su - sysops -c "ssh -p 2242 -o BatchMode=yes -o StrictHostKeyChecking=accept-new sysops@192.168.56.10 'hostname; id -nG'"
+-> rc=0 (attendu 0 (2. sysops par cle))
+$ su - sysops -c "ssh -p 2242 -o BatchMode=yes root@192.168.56.10 id"
+-> rc=255 (attendu !=0 (3. root))
+$ su - sysops -c "ssh -p 2242 -o BatchMode=yes -o PubkeyAuthentication=no -o PreferredAuthentications=password sysops@192.168.56.10 true"
+-> rc=255 (attendu !=0 (4. mot de passe))
+$ su - sysops -c "ssh -p 2242 -o BatchMode=yes nadia@192.168.56.10 true"
+-> rc=255 (attendu !=0 (5. nadia hors ssh-admins))
+$ su - sysops -c "ssh -p 2242 -o BatchMode=yes -N -L 9999:localhost:10051 sysops@192.168.56.10 & sleep 3 ; nc -zv -w2 127.0.0.1 9999 ; sleep 1 ; kill \$! 2>/dev/null" ; echo '6. tunnel : refus cote serveur (voir journal sshd)'
+$ su - sysops -c "ssh -p 2242 -o BatchMode=yes -o KexAlgorithms=diffie-hellman-group14-sha1 sysops@192.168.56.10 true"
+-> rc=255 (attendu !=0 (7. KEX SHA-1))
+
+$ sshd -T | grep -E '^(passwordauthentication|allowgroups|port|permitrootlogin) '
+port 2242
+permitrootlogin no
+passwordauthentication no
+allowgroups ssh-admins
+
+$ semanage port -l | grep ssh_port_t
+ssh_port_t                     tcp      2242, 22
+
+$ journalctl -k -g SSH-NEW --no-pager | wc -l
+12
+
+$ journalctl --list-boots --no-pager | wc -l
+3
+
+$ auditctl -l | wc -l ; ausearch -k sudoers -i 2>/dev/null | grep -c '^type=SYSCALL'
+12
+6
+
+$ grep -h 'ALERTE' /root/tp/TP3/captures/m3-blocage.txt | head -2
+nov. 04 15:32:21 srv-core helios-watch-auth[3949]: ALERTE : 192.168.56.11 bloquee (10 echecs SSH en 10min, seuil 5)
+$ journalctl -t helios-watch-auth -n 3 --no-pager -o cat ; grep -c 'ALERTE' <(journalctl -t helios-watch-auth --since '-15min' -o cat)
+
+$ systemctl list-timers --all helios-watch-auth.timer --no-pager
+NEXT LEFT LAST                        PASSED       UNIT                    ACTIVATES
+-    -    Wed 2026-11-04 15:34:01 CET 4min 21s ago helios-watch-auth.timer helios-watch-auth.service
+
+1 timers listed.
+

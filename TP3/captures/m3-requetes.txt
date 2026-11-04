@@ -1,0 +1,141 @@
+$ journalctl -u sshd.service --since '-2h' -p warning -o short-iso --no-pager | tail -15
+2026-11-04T15:13:48+0100 srv-core systemd[1]: sshd.service: Failed with result 'exit-code'.
+2026-11-04T15:13:48+0100 srv-core systemd[1]: Failed to start OpenSSH server daemon.
+-- Boot 2f26508279884363acde8aee32848f36 --
+2026-11-04T15:24:41+0100 srv-core sshd[995]: error: Bind to port 2242 on 10.42.0.10 failed: Cannot assign requested address.
+2026-11-04T15:24:41+0100 srv-core sshd[995]: error: Bind to port 2242 on 192.168.56.10 failed: Cannot assign requested address.
+2026-11-04T15:24:41+0100 srv-core sshd[995]: fatal: Cannot bind any address.
+2026-11-04T15:24:41+0100 srv-core systemd[1]: sshd.service: Failed with result 'exit-code'.
+2026-11-04T15:24:41+0100 srv-core systemd[1]: Failed to start OpenSSH server daemon.
+
+$ journalctl _SYSTEMD_UNIT=sshd.service -g 'Invalid user|Failed|Accepted' --no-pager | tail -20
+nov. 04 15:13:05 srv-core sshd-session[25951]: Accepted password for sysops from 192.168.56.11 port 32972 ssh2
+nov. 04 15:13:14 srv-core sshd-session[26014]: Accepted publickey for sysops from 192.168.56.11 port 50292 ssh2: ED25519 SHA256:sLaiVYzSPxVY/sUiHVOmyIHVwAdu/V+XhZGjL9f/4a4
+nov. 04 15:17:48 srv-core sshd-session[26394]: Accepted key ED25519 SHA256:sLaiVYzSPxVY/sUiHVOmyIHVwAdu/V+XhZGjL9f/4a4 found at /home/sysops/.ssh/authorized_keys:1
+nov. 04 15:17:48 srv-core sshd-session[26394]: Accepted key ED25519 SHA256:sLaiVYzSPxVY/sUiHVOmyIHVwAdu/V+XhZGjL9f/4a4 found at /home/sysops/.ssh/authorized_keys:1
+nov. 04 15:17:48 srv-core sshd-session[26394]: Accepted publickey for sysops from 192.168.56.11 port 48170 ssh2: ED25519 SHA256:sLaiVYzSPxVY/sUiHVOmyIHVwAdu/V+XhZGjL9f/4a4
+nov. 04 15:18:05 srv-core sshd-session[26463]: Accepted key ED25519 SHA256:sLaiVYzSPxVY/sUiHVOmyIHVwAdu/V+XhZGjL9f/4a4 found at /home/sysops/.ssh/authorized_keys:1
+nov. 04 15:18:05 srv-core sshd-session[26463]: Accepted key ED25519 SHA256:sLaiVYzSPxVY/sUiHVOmyIHVwAdu/V+XhZGjL9f/4a4 found at /home/sysops/.ssh/authorized_keys:1
+nov. 04 15:18:05 srv-core sshd-session[26463]: Accepted publickey for sysops from 192.168.56.11 port 58080 ssh2: ED25519 SHA256:sLaiVYzSPxVY/sUiHVOmyIHVwAdu/V+XhZGjL9f/4a4
+nov. 04 15:18:37 srv-core sshd-session[26494]: Accepted key ED25519 SHA256:sLaiVYzSPxVY/sUiHVOmyIHVwAdu/V+XhZGjL9f/4a4 found at /home/sysops/.ssh/authorized_keys:1
+nov. 04 15:18:37 srv-core sshd-session[26494]: Accepted key ED25519 SHA256:sLaiVYzSPxVY/sUiHVOmyIHVwAdu/V+XhZGjL9f/4a4 found at /home/sysops/.ssh/authorized_keys:1
+nov. 04 15:18:37 srv-core sshd-session[26494]: Accepted publickey for sysops from 192.168.56.11 port 39150 ssh2: ED25519 SHA256:sLaiVYzSPxVY/sUiHVOmyIHVwAdu/V+XhZGjL9f/4a4
+-- Boot 2f26508279884363acde8aee32848f36 --
+
+$ journalctl --facility=authpriv --since today --no-pager | tail -20
+nov. 04 15:24:16 srv-core polkitd[763]: Finished loading, compiling and executing 12 rules
+nov. 04 15:24:16 srv-core polkitd[763]: Acquired the name org.freedesktop.PolicyKit1 on the system bus
+nov. 04 15:24:41 srv-core sshd[995]: error: Bind to port 2242 on 10.42.0.10 failed: Cannot assign requested address.
+nov. 04 15:24:41 srv-core sshd[995]: error: Bind to port 2242 on 192.168.56.10 failed: Cannot assign requested address.
+nov. 04 15:24:41 srv-core sshd[995]: fatal: Cannot bind any address.
+nov. 04 15:24:47 srv-core systemd[1072]: pam_unix(systemd-user:session): session opened for user gdm(uid=42) by gdm(uid=0)
+nov. 04 15:24:50 srv-core gdm-launch-environment][1035]: pam_unix(gdm-launch-environment:session): session opened for user gdm(uid=42) by (uid=0)
+nov. 04 15:25:24 srv-core sshd[1584]: Server listening on 10.42.0.10 port 2242.
+nov. 04 15:25:24 srv-core sshd[1584]: Server listening on 192.168.56.10 port 2242.
+nov. 04 15:25:35 srv-core polkitd[763]: Registered Authentication Agent for unix-session:c1 (system bus name :1.24 [/usr/bin/gnome-shell], object path /org/freedesktop/PolicyKit1/AuthenticationAgent, locale fr_FR.UTF-8)
+nov. 04 15:27:37 srv-core gdm-password][2667]: gkr-pam: unable to locate daemon control file
+nov. 04 15:27:37 srv-core gdm-password][2667]: gkr-pam: stashed password to try later in open session
+nov. 04 15:27:38 srv-core systemd[2687]: pam_unix(systemd-user:session): session opened for user dav(uid=1000) by dav(uid=0)
+nov. 04 15:27:38 srv-core gdm-password][2667]: pam_unix(gdm-password:session): session opened for user dav(uid=1000) by dav(uid=0)
+nov. 04 15:27:38 srv-core gdm-password][2667]: gkr-pam: gnome-keyring-daemon started properly and unlocked keyring
+nov. 04 15:27:41 srv-core polkitd[763]: Registered Authentication Agent for unix-session:2 (system bus name :1.71 [/usr/bin/gnome-shell], object path /org/freedesktop/PolicyKit1/AuthenticationAgent, locale fr_FR.UTF-8)
+nov. 04 15:27:46 srv-core gdm-launch-environment][1035]: pam_unix(gdm-launch-environment:session): session closed for user gdm
+nov. 04 15:27:46 srv-core polkitd[763]: Unregistered Authentication Agent for unix-session:c1 (system bus name :1.24, object path /org/freedesktop/PolicyKit1/AuthenticationAgent, locale fr_FR.UTF-8) (disconnected from bus)
+nov. 04 15:28:02 srv-core sudo[3410]:      dav : TTY=pts/0 ; PWD=/root ; USER=root ; COMMAND=/bin/bash
+nov. 04 15:28:02 srv-core sudo[3410]: pam_unix(sudo-i:session): session opened for user root(uid=0) by dav(uid=1000)
+
+$ journalctl _UID=5101 --since today --no-pager | tail
+-- No entries --
+
+$ journalctl -t sudo --since today -o json-pretty | head -40
+{
+	"_SOURCE_REALTIME_TIMESTAMP" : "1793800040244427",
+	"_GID" : "1000",
+	"_COMM" : "sudo",
+	"_MACHINE_ID" : "00ae56862a31496bbe7b419119b26956",
+	"SYSLOG_TIMESTAMP" : "Nov  4 14:47:20 ",
+	"_SYSTEMD_OWNER_UID" : "1000",
+	"_SYSTEMD_INVOCATION_ID" : "6e8cac75e5ef4cb19af39e91dbdb3db7",
+	"_SYSTEMD_CGROUP" : "/user.slice/user-1000.slice/user@1000.service/app.slice/app-org.gnome.Terminal.slice/vte-spawn-0ad0eb3f-8dcd-440c-9bf5-e3ec63273ba8.scope",
+	"_PID" : "24051",
+	"__REALTIME_TIMESTAMP" : "1793800040244449",
+	"_TRANSPORT" : "syslog",
+	"__MONOTONIC_TIMESTAMP" : "104311332",
+	"__CURSOR" : "s=6dbe7e5c72114c37a4de32c5ebfdbf68;i=79c;b=00e06609d7c34028846f44a1350036ba;m=637aa24;t=65f739e3264e1;x=78436991acd60143",
+	"_SYSTEMD_USER_UNIT" : "vte-spawn-0ad0eb3f-8dcd-440c-9bf5-e3ec63273ba8.scope",
+	"_SYSTEMD_SLICE" : "user-1000.slice",
+	"MESSAGE" : "     dav : TTY=pts/0 ; PWD=/root ; USER=root ; COMMAND=/bin/bash",
+	"SYSLOG_IDENTIFIER" : "sudo",
+	"_EXE" : "/usr/bin/sudo",
+	"_CAP_EFFECTIVE" : "1ffffffffff",
+	"_BOOT_ID" : "00e06609d7c34028846f44a1350036ba",
+	"_RUNTIME_SCOPE" : "system",
+	"_HOSTNAME" : "srv-core",
+	"_SYSTEMD_USER_SLICE" : "app-org.gnome.Terminal.slice",
+	"_AUDIT_SESSION" : "3",
+	"SYSLOG_FACILITY" : "10",
+	"_UID" : "1000",
+	"_CMDLINE" : "sudo -i",
+	"_SELINUX_CONTEXT" : "unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023",
+	"_AUDIT_LOGINUID" : "1000",
+	"_SYSTEMD_UNIT" : "user@1000.service",
+	"PRIORITY" : "5"
+}
+{
+	"SYSLOG_TIMESTAMP" : "Nov  4 14:47:20 ",
+	"_MACHINE_ID" : "00ae56862a31496bbe7b419119b26956",
+	"_PID" : "24051",
+	"_TRANSPORT" : "syslog",
+	"_UID" : "1000",
+	"__MONOTONIC_TIMESTAMP" : "104324880",
+
+$ journalctl -b -1 -p err --no-pager | tail -15
+nov. 04 14:45:36 srv-core kernel: Warning: Unmaintained driver is detected: e1000
+nov. 04 14:45:36 srv-core kernel: Warning: Unmaintained driver is detected: e1000_init_module
+nov. 04 14:45:37 srv-core kernel: vmwgfx 0000:00:02.0: [drm] *ERROR* vmwgfx seems to be running on an unsupported hypervisor.
+nov. 04 14:45:37 srv-core kernel: vmwgfx 0000:00:02.0: [drm] *ERROR* This configuration is likely broken.
+nov. 04 14:45:37 srv-core kernel: vmwgfx 0000:00:02.0: [drm] *ERROR* Please switch to a supported graphics device to avoid problems.
+nov. 04 14:45:43 srv-core alsactl[785]: alsa-lib main.c:1804:(snd_use_case_mgr_open) [error.ucm] failed to import hw:0 use case configuration -2
+nov. 04 14:46:41 srv-core gdm-password][23294]: gkr-pam: unable to locate daemon control file
+nov. 04 14:46:53 srv-core gdm-wayland-session[1420]: GLib: Source ID 2 was not found when attempting to remove it
+nov. 04 14:46:53 srv-core gdm-launch-environment][1250]: GLib-GObject: g_object_unref: assertion 'G_IS_OBJECT (object)' failed
+nov. 04 15:13:48 srv-core sshd[26098]: error: Bind to port 2242 on 10.42.0.10 failed: Permission denied.
+nov. 04 15:13:48 srv-core sshd[26098]: error: Bind to port 2242 on 192.168.56.10 failed: Permission denied.
+nov. 04 15:13:48 srv-core sshd[26098]: fatal: Cannot bind any address.
+nov. 04 15:13:48 srv-core systemd[1]: Failed to start OpenSSH server daemon.
+nov. 04 15:21:52 srv-core dbus-broker-launch[747]: Activation request for 'org.freedesktop.nm_dispatcher' failed.
+nov. 04 15:21:52 srv-core dbus-broker-launch[747]: Activation request for 'org.freedesktop.nm_dispatcher' failed.
+
+$ lastb -n 15 ; last -F -n 10
+nadia                                  Tue Nov  3 14:26 - 14:26  (00:00)
+nadia                                  Tue Nov  3 14:26 - 14:26  (00:00)
+nadia                                  Tue Nov  3 14:26 - 14:26  (00:00)
+nadia                                  Tue Nov  3 14:26 - 14:26  (00:00)
+nadia                                  Tue Nov  3 14:26 - 14:26  (00:00)
+nadia                                  Tue Nov  3 14:26 - 14:26  (00:00)
+nadia                                  Tue Nov  3 14:26 - 14:26  (00:00)
+
+btmp commence Tue Nov  3 14:26:22 2026
+dav      tty2         local            Wed Nov  4 15:27:42 2026   still logged in
+dav      tty2         local            Wed Nov  4 15:27:38 2026 - Wed Nov  4 15:27:42 2026  (00:00)
+reboot   system boot  5.14.0-687.65.1. Wed Nov  4 15:23:39 2026   still running
+dav      tty2         local            Wed Nov  4 14:46:45 2026 - down                      (00:35)
+dav      tty2         local            Wed Nov  4 14:46:42 2026 - Wed Nov  4 14:46:45 2026  (00:00)
+reboot   system boot  5.14.0-687.65.1. Wed Nov  4 14:45:40 2026 - Wed Nov  4 15:22:11 2026  (00:36)
+reboot   system boot  5.14.0-687.10.1. Wed Nov  4 13:06:33 2026 - Wed Nov  4 13:20:00 2026  (00:13)
+dav      tty2         local            Wed Nov  4 12:54:00 2026 - down                      (00:11)
+dav      tty2         local            Wed Nov  4 12:53:53 2026 - Wed Nov  4 12:54:00 2026  (00:00)
+reboot   system boot  5.14.0-687.10.1. Wed Nov  4 12:53:10 2026 - Wed Nov  4 13:05:18 2026  (00:12)
+
+wtmp commence Mon Nov  2 19:11:09 2026
+
+$ lslogins -u --output=USER,PWD-CHANGE,PWD-EXPIR,LAST-LOGIN,FAILED-LOGIN
+USER        PWD-CHANGE    PWD-EXPIR   LAST-LOGIN FAILED-LOGIN
+root       1969-déc.31                           
+dav       nov.02/01:00                     15:27 
+julien    nov.02/01:00              nov.03/14:37 
+nadia     nov.03/01:00              nov.03/14:37 nov.03/14:26
+tarek     nov.03/01:00              nov.03/14:33 
+audit-ext nov.03/01:00 nov.24/01:00 nov.03/14:37 
+sysops           01:00                           
+

@@ -1,0 +1,7 @@
+$ su - sysops -c "ssh -p 2242 -o BatchMode=yes sysops@192.168.56.10 'hostname; id -nG'"
+*** Serveur Helios Logistique - acces strictement reserve ***
+Toute connexion est journalisee.
+srv-core
+sysops ssh-admins
+-> rc=0 (attendu 0)
+

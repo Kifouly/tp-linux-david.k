@@ -1,0 +1,71 @@
+$ firewall-cmd --state ; firewall-cmd --get-default-zone ; firewall-cmd --get-active-zones
+running
+public
+public
+  interfaces: enp0s10 enp0s3 enp0s8 enp0s9 bond0 bond0.42
+
+$ nmcli -g NAME con show | while read -r c ; do printf '%s : %s\n' "$c" "$(nmcli -g connection.zone con show "$c")" ; done
+enp0s3 : 
+admin : 
+bond0 : 
+bond0.42 : 
+bond0-p1 : 
+bond0-p2 : 
+lo : 
+
+Connexion NAT : enp0s3
+$ firewall-cmd --get-default-zone ; firewall-cmd --get-active-zones
+drop
+drop
+  interfaces: enp0s3 enp0s9
+internal
+  interfaces: bond0 bond0.42
+public
+  interfaces: enp0s10
+work
+  interfaces: enp0s8
+
+$ firewall-cmd --check-config && firewall-cmd --reload
+success
+success
+
+$ firewall-cmd --get-ipsets ; firewall-cmd --zone=work --list-rich-rules
+helios-blacklist
+rule source ipset="helios-blacklist" drop
+rule port port="10051" protocol="tcp" reject
+rule service name="ssh" log prefix="SSH-NEW " level="info" limit value="3/m" accept limit value="6/m"
+
+$ firewall-cmd --zone=work --list-all ; firewall-cmd --zone=internal --list-all
+work (active)
+  target: default
+  icmp-block-inversion: no
+  interfaces: enp0s8
+  sources: 192.168.56.0/24
+  services: 
+  ports: 
+  protocols: 
+  forward: yes
+  masquerade: no
+  forward-ports: 
+  source-ports: 
+  icmp-blocks: 
+  rich rules: 
+	rule source ipset="helios-blacklist" drop
+	rule port port="10051" protocol="tcp" reject
+	rule service name="ssh" log prefix="SSH-NEW " level="info" limit value="3/m" accept limit value="6/m"
+internal (active)
+  target: default
+  icmp-block-inversion: no
+  interfaces: bond0 bond0.42
+  sources: 
+  services: ssh
+  ports: 10051/tcp
+  protocols: 
+  forward: yes
+  masquerade: no
+  forward-ports: 
+  source-ports: 
+  icmp-blocks: 
+  rich rules: 
+	rule source ipset="helios-blacklist" drop
+

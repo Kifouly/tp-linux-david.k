@@ -1,0 +1,31 @@
+$ systemctl restart sshd
+Job for sshd.service failed because the control process exited with error code.
+See "systemctl status sshd.service" and "journalctl -xeu sshd.service" for details.
+-> rc=1 (attendu !=0 (port 2242 non etiquete ssh_port_t))
+
+$ journalctl -u sshd -n 4 --no-pager -o cat
+Starting OpenSSH server daemon...
+sshd.service: Main process exited, code=exited, status=255/EXCEPTION
+sshd.service: Failed with result 'exit-code'.
+Failed to start OpenSSH server daemon.
+
+$ ausearch -m AVC -ts recent -i 2>/dev/null | grep -m2 name_bind
+type=AVC msg=audit(04/11/2026 15:13:48.068:404) : avc:  denied  { name_bind } for  pid=26098 comm=sshd src=2242 scontext=system_u:system_r:sshd_t:s0-s0:c0.c1023 tcontext=system_u:object_r:unreserved_port_t:s0 tclass=tcp_socket permissive=0 
+type=AVC msg=audit(04/11/2026 15:13:48.100:405) : avc:  denied  { name_bind } for  pid=26098 comm=sshd src=2242 scontext=system_u:system_r:sshd_t:s0-s0:c0.c1023 tcontext=system_u:object_r:unreserved_port_t:s0 tclass=tcp_socket permissive=0 
+
+$ semanage port -l | grep '^ssh_port_t'
+ssh_port_t                     tcp      2242, 22
+
+$ firewall-cmd --zone=work --list-rich-rules ; firewall-cmd --zone=internal --list-ports
+rule source ipset="helios-blacklist" drop
+rule port port="2242" protocol="tcp" log prefix="SSH-NEW " level="info" limit value="3/m" accept limit value="6/m"
+rule port port="10051" protocol="tcp" reject
+2242/tcp 10051/tcp
+
+$ systemctl restart sshd
+-> rc=0 (attendu 0)
+
+$ ss -ltnp | grep sshd
+LISTEN 0      128       10.42.0.10:2242      0.0.0.0:*    users:(("sshd",pid=26189,fd=7))
+LISTEN 0      128    192.168.56.10:2242      0.0.0.0:*    users:(("sshd",pid=26189,fd=8))
+

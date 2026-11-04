@@ -1,0 +1,37 @@
+$ nmap -Pn -p 22,80,111,9090,10051 192.168.56.10
+Starting Nmap 7.94SVN ( https://nmap.org ) at 2026-11-04 14:10 UTC
+Nmap scan report for 192.168.56.10
+Host is up (0.0071s latency).
+
+PORT      STATE    SERVICE
+22/tcp    open     ssh
+80/tcp    filtered http
+111/tcp   filtered rpcbind
+9090/tcp  filtered zeus-admin
+10051/tcp filtered zabbix-trapper
+MAC Address: 08:00:27:2C:43:BF (Oracle VirtualBox virtual NIC)
+
+Nmap done: 1 IP address (1 host up) scanned in 1.76 seconds
+
+$ nc -zv -w2 192.168.56.10 22
+Connection to 192.168.56.10 22 port [tcp/ssh] succeeded!
+-> rc=0 (attendu 0)
+
+$ nc -zv -w 2 192.168.56.10 10051
+nc: connect to 192.168.56.10 port 10051 (tcp) failed: Connection refused
+-> rc=1 (attendu !=0 (reject))
+
+$ for i in $(seq 1 12); do nc -zv -w1 192.168.56.10 22 2>&1 | sed 's/^/'$i' : /' ; done
+1 : Connection to 192.168.56.10 22 port [tcp/ssh] succeeded!
+2 : Connection to 192.168.56.10 22 port [tcp/ssh] succeeded!
+3 : Connection to 192.168.56.10 22 port [tcp/ssh] succeeded!
+4 : Connection to 192.168.56.10 22 port [tcp/ssh] succeeded!
+5 : nc: connect to 192.168.56.10 port 22 (tcp) failed: No route to host
+6 : nc: connect to 192.168.56.10 port 22 (tcp) failed: No route to host
+7 : nc: connect to 192.168.56.10 port 22 (tcp) failed: No route to host
+8 : nc: connect to 192.168.56.10 port 22 (tcp) failed: No route to host
+9 : nc: connect to 192.168.56.10 port 22 (tcp) failed: No route to host
+10 : nc: connect to 192.168.56.10 port 22 (tcp) failed: No route to host
+11 : nc: connect to 192.168.56.10 port 22 (tcp) timed out: Operation now in progress
+12 : nc: connect to 192.168.56.10 port 22 (tcp) failed: No route to host
+

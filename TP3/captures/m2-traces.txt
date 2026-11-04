@@ -1,0 +1,51 @@
+$ journalctl -u sshd --since '-20min' -o short-iso --no-pager | grep -vE 'Server listening|Received signal|Starting|Started|Stopping|Stopped|Deactivated' | tail -40
+2026-11-04T15:13:14+0100 srv-core sshd-session[26014]: pam_unix(sshd:session): session opened for user sysops(uid=5104) by sysops(uid=0)
+2026-11-04T15:13:47+0100 srv-core systemd[1]: sshd.service: Consumed 1.867s CPU time.
+2026-11-04T15:13:48+0100 srv-core systemd[1]: sshd.service: Main process exited, code=exited, status=255/EXCEPTION
+2026-11-04T15:13:48+0100 srv-core systemd[1]: sshd.service: Failed with result 'exit-code'.
+2026-11-04T15:13:48+0100 srv-core systemd[1]: Failed to start OpenSSH server daemon.
+2026-11-04T15:14:30+0100 srv-core systemd[1]: sshd.service: Scheduled restart job, restart counter is at 1.
+2026-11-04T15:17:46+0100 srv-core sshd-session[26394]: main: SHA1 in signatures is disabled for RSA keys
+2026-11-04T15:17:46+0100 srv-core sshd-session[26394]: Connection from 192.168.56.11 port 48170 on 192.168.56.10 port 2242 rdomain ""
+2026-11-04T15:17:48+0100 srv-core sshd-session[26394]: Accepted key ED25519 SHA256:sLaiVYzSPxVY/sUiHVOmyIHVwAdu/V+XhZGjL9f/4a4 found at /home/sysops/.ssh/authorized_keys:1
+2026-11-04T15:17:48+0100 srv-core sshd-session[26394]: Postponed publickey for sysops from 192.168.56.11 port 48170 ssh2 [preauth]
+2026-11-04T15:17:48+0100 srv-core sshd-session[26394]: Accepted key ED25519 SHA256:sLaiVYzSPxVY/sUiHVOmyIHVwAdu/V+XhZGjL9f/4a4 found at /home/sysops/.ssh/authorized_keys:1
+2026-11-04T15:17:48+0100 srv-core sshd-session[26394]: Accepted publickey for sysops from 192.168.56.11 port 48170 ssh2: ED25519 SHA256:sLaiVYzSPxVY/sUiHVOmyIHVwAdu/V+XhZGjL9f/4a4
+2026-11-04T15:18:02+0100 srv-core sshd-session[26457]: main: SHA1 in signatures is disabled for RSA keys
+2026-11-04T15:18:02+0100 srv-core sshd-session[26457]: Connection from 192.168.56.11 port 58044 on 192.168.56.10 port 2242 rdomain ""
+2026-11-04T15:18:03+0100 srv-core sshd-session[26457]: User root from 192.168.56.11 not allowed because none of user's groups are listed in AllowGroups
+2026-11-04T15:18:03+0100 srv-core sshd-session[26457]: Connection closed by invalid user root 192.168.56.11 port 58044 [preauth]
+2026-11-04T15:18:03+0100 srv-core sshd[26242]: srclimit_penalise: ipv4: new 192.168.56.11/32 deferred penalty of 1 seconds for penalty: connections without attempting authentication
+2026-11-04T15:18:03+0100 srv-core sshd-session[26459]: main: SHA1 in signatures is disabled for RSA keys
+2026-11-04T15:18:03+0100 srv-core sshd-session[26459]: Connection from 192.168.56.11 port 58056 on 192.168.56.10 port 2242 rdomain ""
+2026-11-04T15:18:03+0100 srv-core sshd-session[26459]: Connection closed by authenticating user sysops 192.168.56.11 port 58056 [preauth]
+2026-11-04T15:18:04+0100 srv-core sshd-session[26461]: main: SHA1 in signatures is disabled for RSA keys
+2026-11-04T15:18:04+0100 srv-core sshd-session[26461]: Connection from 192.168.56.11 port 58066 on 192.168.56.10 port 2242 rdomain ""
+2026-11-04T15:18:04+0100 srv-core sshd-session[26461]: User nadia from 192.168.56.11 not allowed because none of user's groups are listed in AllowGroups
+2026-11-04T15:18:04+0100 srv-core sshd-session[26461]: Connection closed by invalid user nadia 192.168.56.11 port 58066 [preauth]
+2026-11-04T15:18:05+0100 srv-core sshd-session[26463]: main: SHA1 in signatures is disabled for RSA keys
+2026-11-04T15:18:05+0100 srv-core sshd-session[26463]: Connection from 192.168.56.11 port 58080 on 192.168.56.10 port 2242 rdomain ""
+2026-11-04T15:18:05+0100 srv-core sshd-session[26463]: Accepted key ED25519 SHA256:sLaiVYzSPxVY/sUiHVOmyIHVwAdu/V+XhZGjL9f/4a4 found at /home/sysops/.ssh/authorized_keys:1
+2026-11-04T15:18:05+0100 srv-core sshd-session[26463]: Postponed publickey for sysops from 192.168.56.11 port 58080 ssh2 [preauth]
+2026-11-04T15:18:05+0100 srv-core sshd-session[26463]: Accepted key ED25519 SHA256:sLaiVYzSPxVY/sUiHVOmyIHVwAdu/V+XhZGjL9f/4a4 found at /home/sysops/.ssh/authorized_keys:1
+2026-11-04T15:18:05+0100 srv-core sshd-session[26463]: Accepted publickey for sysops from 192.168.56.11 port 58080 ssh2: ED25519 SHA256:sLaiVYzSPxVY/sUiHVOmyIHVwAdu/V+XhZGjL9f/4a4
+2026-11-04T15:18:24+0100 srv-core sshd-session[26484]: main: SHA1 in signatures is disabled for RSA keys
+2026-11-04T15:18:24+0100 srv-core sshd-session[26484]: Connection from 192.168.56.11 port 40436 on 192.168.56.10 port 2242 rdomain ""
+2026-11-04T15:18:24+0100 srv-core sshd-session[26484]: Unable to negotiate with 192.168.56.11 port 40436: no matching key exchange method found. Their offer: diffie-hellman-group14-sha1,ext-info-c,kex-strict-c-v00@openssh.com [preauth]
+2026-11-04T15:18:24+0100 srv-core sshd[26242]: srclimit_penalise: ipv4: new 192.168.56.11/32 deferred penalty of 1 seconds for penalty: connections without attempting authentication
+2026-11-04T15:18:36+0100 srv-core sshd-session[26494]: main: SHA1 in signatures is disabled for RSA keys
+2026-11-04T15:18:36+0100 srv-core sshd-session[26494]: Connection from 192.168.56.11 port 39150 on 192.168.56.10 port 2242 rdomain ""
+2026-11-04T15:18:37+0100 srv-core sshd-session[26494]: Accepted key ED25519 SHA256:sLaiVYzSPxVY/sUiHVOmyIHVwAdu/V+XhZGjL9f/4a4 found at /home/sysops/.ssh/authorized_keys:1
+2026-11-04T15:18:37+0100 srv-core sshd-session[26494]: Postponed publickey for sysops from 192.168.56.11 port 39150 ssh2 [preauth]
+2026-11-04T15:18:37+0100 srv-core sshd-session[26494]: Accepted key ED25519 SHA256:sLaiVYzSPxVY/sUiHVOmyIHVwAdu/V+XhZGjL9f/4a4 found at /home/sysops/.ssh/authorized_keys:1
+2026-11-04T15:18:37+0100 srv-core sshd-session[26494]: Accepted publickey for sysops from 192.168.56.11 port 39150 ssh2: ED25519 SHA256:sLaiVYzSPxVY/sUiHVOmyIHVwAdu/V+XhZGjL9f/4a4
+
+$ sshd -T | grep -iE 'permitrootlogin|passwordauthentication|allowgroups|maxauthtries|^port |loglevel|authenticationmethods'
+port 2242
+maxauthtries 3
+permitrootlogin no
+passwordauthentication no
+loglevel VERBOSE
+allowgroups ssh-admins
+authenticationmethods publickey
+

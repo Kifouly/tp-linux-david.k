@@ -1,0 +1,9 @@
+$ getent group ssh-admins ; id sysops
+ssh-admins:x:983:sysops,julien
+uid=5104(sysops) gid=5104(sysops) groupes=5104(sysops),983(ssh-admins)
+
+$ for k in /etc/ssh/ssh_host_*_key.pub ; do ssh-keygen -lf "$k" ; done
+256 SHA256:6nJP08xEgj4cCDOEm8xSuYTJMTUk7LwHUz1ui2I2yXU no comment (ECDSA)
+256 SHA256:MnoEczstq+mPSGWHAMoKPkotbTLzDYHbL3g3BOP1Qac no comment (ED25519)
+3072 SHA256:5KqMNIbFhnOqT+0/DsS9ECxTbte4I1/Xjqia6IbjnxY no comment (RSA)
+
