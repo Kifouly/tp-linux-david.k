@@ -149,7 +149,7 @@ work (active)
   source-ports: 
   icmp-blocks: 
   rich rules: 
-	rule port port="10051" protocol="tcp" reject
-	rule source ipset="helios-blacklist" drop
 	rule port port="2242" protocol="tcp" log prefix="SSH-NEW " level="info" limit value="3/m" accept limit value="6/m"
+	rule source ipset="helios-blacklist" drop
+	rule port port="10051" protocol="tcp" reject
 

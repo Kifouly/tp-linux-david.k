@@ -1,19 +1,25 @@
 $ journalctl -u sshd --since '-10min' -g 'Invalid user' --no-pager | tail
-nov. 04 15:31:43 srv-core sshd-session[3897]: Invalid user pirate from 192.168.56.11 port 47108
-nov. 04 15:31:44 srv-core sshd-session[3899]: Invalid user pirate from 192.168.56.11 port 47118
-nov. 04 15:31:44 srv-core sshd-session[3901]: Invalid user pirate from 192.168.56.11 port 47128
-nov. 04 15:31:44 srv-core sshd-session[3903]: Invalid user pirate from 192.168.56.11 port 47140
-nov. 04 15:31:45 srv-core sshd-session[3905]: Invalid user pirate from 192.168.56.11 port 47144
+nov. 04 16:10:02 srv-core sshd-session[4640]: Invalid user pirate from 192.168.56.11 port 42360
+nov. 04 16:10:03 srv-core sshd-session[4645]: Invalid user pirate from 192.168.56.11 port 42372
+nov. 04 16:10:04 srv-core sshd-session[4647]: Invalid user pirate from 192.168.56.11 port 42380
+nov. 04 16:10:04 srv-core sshd-session[4652]: Invalid user pirate from 192.168.56.11 port 42390
+nov. 04 16:10:05 srv-core sshd-session[4655]: Invalid user pirate from 192.168.56.11 port 42398
 
 $ systemctl start helios-watch-auth.service ; journalctl -t helios-watch-auth -n 10 --no-pager
-nov. 04 15:32:21 srv-core helios-watch-auth[3949]: ALERTE : 192.168.56.11 bloquee (10 echecs SSH en 10min, seuil 5)
-nov. 04 15:32:21 srv-core helios-watch-auth[3950]: analyse terminee : 1 source(s) en echec, 1 nouveau(x) blocage(s)
-nov. 04 15:34:07 srv-core helios-watch-auth[4049]: analyse terminee : 1 source(s) en echec, 0 nouveau(x) blocage(s)
-nov. 04 15:34:54 srv-core helios-watch-auth[4120]: analyse terminee : 1 source(s) en echec, 0 nouveau(x) blocage(s)
+nov. 04 15:58:07 srv-core helios-watch-auth[3689]: analyse terminee : 0 source(s) en echec, 0 nouveau(x) blocage(s)
+nov. 04 16:00:00 srv-core helios-watch-auth[3795]: analyse terminee : 0 source(s) en echec, 0 nouveau(x) blocage(s)
+nov. 04 16:02:04 srv-core helios-watch-auth[3932]: analyse terminee : 0 source(s) en echec, 0 nouveau(x) blocage(s)
+nov. 04 16:04:07 srv-core helios-watch-auth[4047]: analyse terminee : 0 source(s) en echec, 0 nouveau(x) blocage(s)
+nov. 04 16:06:08 srv-core helios-watch-auth[4418]: analyse terminee : 0 source(s) en echec, 0 nouveau(x) blocage(s)
+nov. 04 16:08:05 srv-core helios-watch-auth[4549]: analyse terminee : 0 source(s) en echec, 0 nouveau(x) blocage(s)
+nov. 04 16:10:10 srv-core helios-watch-auth[4676]: ALERTE : 192.168.56.11 bloquee (10 echecs SSH en 10min, seuil 5)
+nov. 04 16:10:10 srv-core helios-watch-auth[4677]: analyse terminee : 1 source(s) en echec, 1 nouveau(x) blocage(s)
+nov. 04 16:12:10 srv-core helios-watch-auth[4785]: analyse terminee : 1 source(s) en echec, 0 nouveau(x) blocage(s)
+nov. 04 16:13:13 srv-core helios-watch-auth[4867]: analyse terminee : 1 source(s) en echec, 0 nouveau(x) blocage(s)
 
 $ firewall-cmd --ipset=helios-blacklist --get-entries ; cat /var/lib/helios/blocked.txt
 192.168.56.11
-192.168.56.11 2026-11-04T15:32:21+01:00 10
+192.168.56.11 2026-11-04T16:10:10+01:00 10
 
 $ nft list set inet firewalld helios-blacklist
 table inet firewalld {
@@ -26,11 +32,11 @@ table inet firewalld {
 }
 
 $ journalctl -k -g 'DROP|REJECT' --since '-10min' --no-pager | tail -5
-nov. 04 15:31:45 srv-core kernel: filter_IN_work_REJECT: IN=enp0s8 OUT= MAC=08:00:27:2c:43:bf:08:00:27:89:26:4e:08:00 SRC=192.168.56.11 DST=192.168.56.10 LEN=60 TOS=0x10 PREC=0x00 TTL=64 ID=35697 DF PROTO=TCP SPT=47154 DPT=2242 WINDOW=64240 RES=0x00 SYN URGP=0 
-nov. 04 15:31:45 srv-core kernel: filter_IN_work_REJECT: IN=enp0s8 OUT= MAC=08:00:27:2c:43:bf:08:00:27:89:26:4e:08:00 SRC=192.168.56.11 DST=192.168.56.10 LEN=60 TOS=0x10 PREC=0x00 TTL=64 ID=43228 DF PROTO=TCP SPT=47160 DPT=2242 WINDOW=64240 RES=0x00 SYN URGP=0 
-nov. 04 15:31:45 srv-core kernel: filter_IN_work_REJECT: IN=enp0s8 OUT= MAC=08:00:27:2c:43:bf:08:00:27:89:26:4e:08:00 SRC=192.168.56.11 DST=192.168.56.10 LEN=60 TOS=0x10 PREC=0x00 TTL=64 ID=53475 DF PROTO=TCP SPT=47174 DPT=2242 WINDOW=64240 RES=0x00 SYN URGP=0 
-nov. 04 15:31:45 srv-core kernel: filter_IN_work_REJECT: IN=enp0s8 OUT= MAC=08:00:27:2c:43:bf:08:00:27:89:26:4e:08:00 SRC=192.168.56.11 DST=192.168.56.10 LEN=60 TOS=0x10 PREC=0x00 TTL=64 ID=4441 DF PROTO=TCP SPT=47188 DPT=2242 WINDOW=64240 RES=0x00 SYN URGP=0 
-nov. 04 15:31:45 srv-core kernel: filter_IN_work_REJECT: IN=enp0s8 OUT= MAC=08:00:27:2c:43:bf:08:00:27:89:26:4e:08:00 SRC=192.168.56.11 DST=192.168.56.10 LEN=60 TOS=0x10 PREC=0x00 TTL=64 ID=10411 DF PROTO=TCP SPT=47204 DPT=2242 WINDOW=64240 RES=0x00 SYN URGP=0 
+nov. 04 16:10:05 srv-core kernel: filter_IN_work_REJECT: IN=enp0s8 OUT= MAC=08:00:27:2c:43:bf:08:00:27:89:26:4e:08:00 SRC=192.168.56.11 DST=192.168.56.10 LEN=60 TOS=0x10 PREC=0x00 TTL=64 ID=53300 DF PROTO=TCP SPT=42400 DPT=2242 WINDOW=64240 RES=0x00 SYN URGP=0 
+nov. 04 16:10:05 srv-core kernel: filter_IN_work_REJECT: IN=enp0s8 OUT= MAC=08:00:27:2c:43:bf:08:00:27:89:26:4e:08:00 SRC=192.168.56.11 DST=192.168.56.10 LEN=60 TOS=0x10 PREC=0x00 TTL=64 ID=52691 DF PROTO=TCP SPT=42408 DPT=2242 WINDOW=64240 RES=0x00 SYN URGP=0 
+nov. 04 16:10:05 srv-core kernel: filter_IN_work_REJECT: IN=enp0s8 OUT= MAC=08:00:27:2c:43:bf:08:00:27:89:26:4e:08:00 SRC=192.168.56.11 DST=192.168.56.10 LEN=60 TOS=0x10 PREC=0x00 TTL=64 ID=64546 DF PROTO=TCP SPT=42416 DPT=2242 WINDOW=64240 RES=0x00 SYN URGP=0 
+nov. 04 16:10:05 srv-core kernel: filter_IN_work_REJECT: IN=enp0s8 OUT= MAC=08:00:27:2c:43:bf:08:00:27:89:26:4e:08:00 SRC=192.168.56.11 DST=192.168.56.10 LEN=60 TOS=0x10 PREC=0x00 TTL=64 ID=15595 DF PROTO=TCP SPT=42430 DPT=2242 WINDOW=64240 RES=0x00 SYN URGP=0 
+nov. 04 16:10:05 srv-core kernel: filter_IN_work_REJECT: IN=enp0s8 OUT= MAC=08:00:27:2c:43:bf:08:00:27:89:26:4e:08:00 SRC=192.168.56.11 DST=192.168.56.10 LEN=60 TOS=0x10 PREC=0x00 TTL=64 ID=35277 DF PROTO=TCP SPT=42436 DPT=2242 WINDOW=64240 RES=0x00 SYN URGP=0 
 
 $ /usr/local/sbin/helios-watch-auth.sh
 -> rc=0 (attendu 0)
@@ -47,6 +53,6 @@ $ /usr/local/sbin/helios-watch-auth.sh
 $ firewall-cmd --ipset=helios-blacklist --get-entries ; systemctl is-active helios-watch-auth.timer ; systemctl list-timers --all --no-pager | grep -E 'run-|helios-watch'
 
 inactive
-Wed 2026-11-04 15:46:06 CET 10min left    -                           -             run-rea3d7c4295a14850b9cc3abeb367e41b.timer run-rea3d7c4295a14850b9cc3abeb367e41b.service
--                           -             Wed 2026-11-04 15:34:01 CET 1min 8s ago   helios-watch-auth.timer                     helios-watch-auth.service
+Wed 2026-11-04 16:24:24 CET 10min left    -                           -             run-r1fdbed114cec499cad9fb9cbd6414c02.timer run-r1fdbed114cec499cad9fb9cbd6414c02.service
+-                           -             Wed 2026-11-04 16:12:06 CET 1min 19s ago  helios-watch-auth.timer                     helios-watch-auth.service
 

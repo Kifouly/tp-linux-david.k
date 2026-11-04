@@ -6,31 +6,31 @@ $ aureport --start this-week --summary -i
 
 Summary Report
 ======================
-Range of time in logs: 01/01/1970 01:00:00.000 - 04/11/2026 15:38:09.268
-Selected time for report: 01/11/2026 00:00:00 - 04/11/2026 15:38:09.268
-Number of changes in configuration: 185
+Range of time in logs: 01/01/1970 01:00:00.000 - 04/11/2026 16:16:04.531
+Selected time for report: 01/11/2026 00:00:00 - 04/11/2026 16:16:04.531
+Number of changes in configuration: 232
 Number of changes to accounts, groups, or roles: 56
-Number of logins: 14
-Number of failed logins: 11
-Number of authentications: 82
+Number of logins: 17
+Number of failed logins: 16
+Number of authentications: 90
 Number of failed authentications: 11
 Number of users: 6
 Number of terminals: 11
 Number of host names: 4
-Number of executables: 72
-Number of commands: 74
-Number of files: 81
+Number of executables: 76
+Number of commands: 79
+Number of files: 92
 Number of AVC's: 2
-Number of MAC events: 41
-Number of failed syscalls: 10
+Number of MAC events: 48
+Number of failed syscalls: 22
 Number of anomaly events: 7
 Number of responses to anomaly events: 1
-Number of crypto events: 139
+Number of crypto events: 191
 Number of integrity events: 0
 Number of virt events: 0
 Number of keys: 6
-Number of process IDs: 445
-Number of events: 3461
+Number of process IDs: 713
+Number of events: 4198
 
 
 $ aureport --executable --summary -i | head -15
@@ -39,16 +39,16 @@ Executable Summary Report
 =================================
 total  file
 =================================
-1169  /usr/lib/systemd/systemd
-251  /usr/bin/su
-249  /usr/libexec/openssh/sshd-session
-146  /usr/bin/python3.9
-127  /usr/libexec/gdm-session-worker
-102  /usr/bin/sudo
-65  /usr/sbin/auditctl
-32  /usr/bin/tee
-22  /usr/lib/systemd/systemd-update-utmp
-22  /usr/sbin/useradd
+1316  /usr/lib/systemd/systemd
+337  /usr/libexec/openssh/sshd-session
+265  /usr/bin/su
+170  /usr/bin/python3.9
+140  /usr/libexec/gdm-session-worker
+116  /usr/bin/sudo
+102  /usr/sbin/auditctl
+72  /usr/bin/tee
+33  /usr/bin/journalctl
+30  /usr/bin/grep
 
 $ ssh -Q cipher | tr '\n' ' ' ; echo ; ssh -Q kex | tr '\n' ' ' ; echo
 3des-cbc aes128-cbc aes192-cbc aes256-cbc aes128-ctr aes192-ctr aes256-ctr aes128-gcm@openssh.com aes256-gcm@openssh.com chacha20-poly1305@openssh.com 

@@ -37,19 +37,24 @@ $ journalctl -k -g SSH-NEW --no-pager | wc -l
 12
 
 $ journalctl --list-boots --no-pager | wc -l
-3
+5
 
 $ auditctl -l | wc -l ; ausearch -k sudoers -i 2>/dev/null | grep -c '^type=SYSCALL'
 12
-6
+12
 
 $ grep -h 'ALERTE' /root/tp/TP3/captures/m3-blocage.txt | head -2
-nov. 04 15:32:21 srv-core helios-watch-auth[3949]: ALERTE : 192.168.56.11 bloquee (10 echecs SSH en 10min, seuil 5)
+nov. 04 16:10:10 srv-core helios-watch-auth[4676]: ALERTE : 192.168.56.11 bloquee (10 echecs SSH en 10min, seuil 5)
 $ journalctl -t helios-watch-auth -n 3 --no-pager -o cat ; grep -c 'ALERTE' <(journalctl -t helios-watch-auth --since '-15min' -o cat)
 
 $ systemctl list-timers --all helios-watch-auth.timer --no-pager
-NEXT LEFT LAST                        PASSED       UNIT                    ACTIVATES
--    -    Wed 2026-11-04 15:34:01 CET 4min 21s ago helios-watch-auth.timer helios-watch-auth.service
+NEXT LEFT LAST                        PASSED      UNIT                    ACTIVATES
+-    -    Wed 2026-11-04 16:12:06 CET 4min 7s ago helios-watch-auth.timer helios-watch-auth.service
 
 1 timers listed.
 
+NEXT                        LEFT     LAST                        PASSED       UNIT                    ACTIVATES
+Wed 2026-11-04 16:30:00 CET 16s left Wed 2026-11-04 16:28:06 CET 1min 36s ago helios-watch-auth.timer helios-watch-auth.service
+
+1 timers listed.
+Pass --all to see loaded but inactive timers, too.
