@@ -5,7 +5,7 @@
 | [TP1](TP1/RENDU.pdf) — [rendu (PDF, 5 p.)](TP1/RENDU.pdf) · [rapport détaillé](TP1/RAPPORT.md) | systemd, réseau avancé (bond, VLAN, policy routing), automatisation | `TP1/` |
 | [TP2](TP2/RENDU.pdf) — [rendu (PDF, 5 p.)](TP2/RENDU.pdf) · [rapport détaillé](TP2/RAPPORT.md) | comptes, politique d'authentification, setgid/sticky/umask, ACL POSIX, sudo | `TP2/` |
 | [TP3](TP3/RENDU.pdf) — [rendu (PDF, 5 p.)](TP3/RENDU.pdf) · [rapport détaillé](TP3/RAPPORT.md) | firewalld par zone, durcissement sshd, journald/auditd, détection et blocage | `TP3/` |
-| PROJET — `PROJET/scripts/projet.sh` | portail de suivi : service durci, droits, sudo, pare-feu, Zabbix, sauvegarde | `PROJET/` |
+| [PROJET](PROJET/RENDU.pdf) — [rendu (PDF, 5 p.)](PROJET/RENDU.pdf) · [rapport](PROJET/RAPPORT.md) · [runbook](PROJET/RUNBOOK.md) | portail de suivi : service durci, droits, sudo, pare-feu, Zabbix, sauvegarde, audit | `PROJET/` |
 
 ## Arborescence TP1
 
@@ -62,4 +62,15 @@ Prérequis : adaptateur 2 de chaque VM en *réseau privé hôte* (`enp0s8`, 192.
 srv-core : m0   srv-edge : e1   srv-core : m1   srv-edge : e2   srv-core : m2a
 srv-edge : e3   srv-core : m2   srv-edge : e4   srv-core : m3a (redémarre)
 srv-core : m3   srv-edge : e5   srv-core : m3b  srv-edge : e6   srv-core : fin
+```
+
+## Dérouler le PROJET
+
+Sur `srv-core`, en root, depuis `/root/tp/PROJET` (`alias t=./scripts/projet.sh`) :
+
+```
+t p0 ; t e8a ; t base ; t e34 ; t e5 ; t e6
+#   -> srv-edge, en root : cd /root/tp && git pull && cd PROJET && bash scripts/projet.sh edge
+t e78 ; t e9 ; t charge ; t audit ; t fin
+git add -A && git commit -m "PROJET : preuves" && git push
 ```
