@@ -4,7 +4,7 @@
 |---|---|---|
 | [TP1](TP1/RENDU.pdf) — [rendu (PDF, 5 p.)](TP1/RENDU.pdf) · [rapport détaillé](TP1/RAPPORT.md) | systemd, réseau avancé (bond, VLAN, policy routing), automatisation | `TP1/` |
 | [TP2](TP2/RENDU.pdf) — [rendu (PDF, 5 p.)](TP2/RENDU.pdf) · [rapport détaillé](TP2/RAPPORT.md) | comptes, politique d'authentification, setgid/sticky/umask, ACL POSIX, sudo | `TP2/` |
-| TP3 — `TP3/scripts/tp3.sh` | firewalld par zone, durcissement sshd, journald/auditd, détection et blocage | `TP3/` |
+| [TP3](TP3/RENDU.pdf) — [rendu (PDF, 5 p.)](TP3/RENDU.pdf) · [rapport détaillé](TP3/RAPPORT.md) | firewalld par zone, durcissement sshd, journald/auditd, détection et blocage | `TP3/` |
 
 ## Arborescence TP1
 
