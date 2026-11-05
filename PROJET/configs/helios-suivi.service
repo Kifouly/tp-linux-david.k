@@ -1,0 +1,51 @@
+[Unit]
+Description=Helios - portail de suivi des tournees (HTTP 8080)
+Documentation=file:/srv/helios/suivi/www/index.html
+After=network-online.target helios-collect.service
+Wants=network-online.target
+# arret / redemarrage de la pile Helios => le portail suit
+PartOf=helios.target
+
+[Service]
+Type=simple
+User=helios-suivi
+Group=helios-suivi
+ExecStart=/usr/bin/python3 -m http.server 8080 --bind 0.0.0.0 --directory /srv/helios/suivi/www
+Restart=always
+RestartSec=2s
+
+# ressources
+MemoryMax=128M
+CPUQuota=50%
+
+# durcissement : le serveur ne fait que lire www et ecouter sur 8080
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+ProtectProc=invisible
+ProcSubset=pid
+RestrictNamespaces=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+RemoveIPC=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+SystemCallFilter=~@privileged @resources
+SystemCallErrorNumber=EPERM
+CapabilityBoundingSet=
+AmbientCapabilities=
+UMask=0077
+
+[Install]
+WantedBy=helios.target

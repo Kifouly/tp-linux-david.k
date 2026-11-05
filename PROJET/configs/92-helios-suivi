@@ -1,0 +1,14 @@
+# Delegation pour l'equipe suivi (lea) - projet portail de suivi
+# Commandes completes, sans joker : impossible d'ajouter une option (ex. journalctl --vacuum-time=1s)
+Cmnd_Alias SUIVI_SVC = /usr/bin/systemctl restart helios-suivi.service, \
+                       /usr/bin/systemctl status helios-suivi.service, \
+                       /usr/bin/systemctl start helios-suivi-publish.service
+Cmnd_Alias SUIVI_LOG = /usr/bin/journalctl -u helios-suivi.service -n 100, \
+                       /usr/bin/journalctl -u helios-suivi.service -n 100 --no-pager, \
+                       /usr/bin/journalctl -u helios-suivi-publish.service -n 100, \
+                       /usr/bin/journalctl -u helios-suivi-publish.service -n 100 --no-pager
+
+Defaults:%suivi   timestamp_timeout=5, passwd_tries=3
+Defaults:%suivi   logfile=/var/log/sudo-suivi.log
+
+%suivi ALL = (root) SUIVI_SVC, SUIVI_LOG
