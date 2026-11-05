@@ -1,0 +1,37 @@
+$ firewall-cmd --zone=internal --query-port=8080/tcp ; firewall-cmd --permanent --zone=internal --query-port=8080/tcp
+yes
+yes
+
+$ firewall-cmd --zone=internal --list-all
+internal (active)
+  target: default
+  icmp-block-inversion: no
+  interfaces: bond0 bond0.42
+  sources: 
+  services: 
+  ports: 10051/tcp 2242/tcp 8080/tcp
+  protocols: 
+  forward: yes
+  masquerade: no
+  forward-ports: 
+  source-ports: 
+  icmp-blocks: 
+  rich rules: 
+	rule source ipset="helios-blacklist" drop
+
+$ for z in $(firewall-cmd --get-zones) ; do firewall-cmd --zone=$z --list-all | grep -q 8080 && echo "8080 dans $z" ; done ; true
+8080 dans internal
+
+$ nft list ruleset | grep 8080
+		tcp dport 8080 accept
+
+$ firewall-cmd --get-default-zone ; firewall-cmd --get-active-zones
+drop
+drop
+  interfaces: enp0s3 enp0s10 enp0s9
+internal
+  interfaces: bond0.42 bond0
+work
+  interfaces: enp0s8
+  sources: 192.168.56.0/24
+

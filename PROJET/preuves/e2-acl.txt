@@ -1,0 +1,64 @@
+$ ls -ld /srv/helios /srv/helios/suivi /srv/helios/suivi/www
+drwxr-xr-x. 6 root root  60  5 nov.  11:27 /srv/helios
+drwxr-s---+ 3 root suivi 17  5 nov.  11:27 /srv/helios/suivi
+drwxrws---+ 2 root suivi 24  5 nov.  11:30 /srv/helios/suivi/www
+
+$ getfacl -p /srv/helios/suivi/www
+# file: /srv/helios/suivi/www
+# owner: root
+# group: suivi
+# flags: -s-
+user::rwx
+user:helios-suivi:rwx
+user:zabbix:--x
+group::rwx
+mask::rwx
+other::---
+default:user::rwx
+default:user:helios-suivi:rw-
+default:group::rwx
+default:mask::rwx
+default:other::---
+
+
+$ getfacl -p /var/lib/helios/telemetry.csv | grep helios-suivi
+user:helios-suivi:r--
+
+$ su - lea -c 'umask 077 ; echo essai > /srv/helios/suivi/www/essai-lea.txt' ; ls -l /srv/helios/suivi/www/ ; getfacl -p /srv/helios/suivi/www/essai-lea.txt
+total 8
+-rw-rw----+ 1 lea suivi   6  5 nov.  11:30 essai-lea.txt
+-rw-rw----+ 1 lea suivi 239  5 nov.  11:30 index.html
+# file: /srv/helios/suivi/www/essai-lea.txt
+# owner: lea
+# group: suivi
+user::rw-
+user:helios-suivi:rw-
+group::rwx	#effective:rw-
+mask::rw-
+other::---
+
+
+$ runuser -u helios-suivi -- cat /srv/helios/suivi/www/essai-lea.txt
+essai
+-> rc=0 (attendu 0)
+
+$ runuser -u nadia -- cat /srv/helios/suivi/www/essai-lea.txt
+cat: /srv/helios/suivi/www/essai-lea.txt: Permission non accordée
+-> rc=1 (attendu !=0)
+
+$ runuser -u zabbix -- ls /srv/helios/suivi/www
+ls: impossible d'ouvrir le répertoire '/srv/helios/suivi/www': Permission non accordée
+-> rc=2 (attendu !=0 (pas de r sur www))
+
+$ ls -l /srv/helios/suivi/www/index.html ; getfacl -p /srv/helios/suivi/www/index.html
+-rw-rw----+ 1 lea suivi 239  5 nov.  11:30 /srv/helios/suivi/www/index.html
+# file: /srv/helios/suivi/www/index.html
+# owner: lea
+# group: suivi
+user::rw-
+user:helios-suivi:rw-
+group::rwx	#effective:rw-
+mask::rw-
+other::---
+
+

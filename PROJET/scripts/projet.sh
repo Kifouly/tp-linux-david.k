@@ -140,7 +140,7 @@ e34() {
   sleep 3
   run e4-units.txt "systemctl status helios-suivi.service --no-pager | head -14"
   run e4-units.txt "systemctl show -p User -p MemoryMax -p CPUQuotaPerSecUSec -p Restart -p RestartUSec -p PartOf -p WantedBy helios-suivi.service"
-  run e4-units.txt "systemctl list-dependencies helios.target --plain --no-pager"
+  run e4-units.txt "systemctl list-dependencies helios.target --plain --no-pager | grep helios"
   run e4-units.txt "systemd-analyze security helios-suivi.service --no-pager | tail -4"
   run e4-units.txt "curl -s -o /dev/null -w 'GET / -> %{http_code}\n' http://127.0.0.1:8080/ ; curl -s -o /dev/null -w 'GET /etat.json -> %{http_code}\n' http://127.0.0.1:8080/etat.json ; curl -s http://127.0.0.1:8080/etat.json"
   run e4-units.txt "kill9_portail"

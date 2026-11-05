@@ -1,0 +1,20 @@
+$ systemctl stop helios-suivi.service ; /usr/local/sbin/helios-suivi-audit.sh ; echo "-> rc=$?"
+[OK] E1 comptes lea / helios-suivi et groupe suivi
+[OK] E2 repertoire publie (setgid, ACL)
+[OK] E3 publication de etat.json
+[KO] E4 units systemd (portail durci, publication) : portail arrete;HTTP 000 sur /;HTTP 000 sur /etat.json
+[OK] E5 delegation sudo
+[OK] E6 pare-feu (8080 seulement en internal)
+[OK] E7 non-regression securite (TP1 a TP3)
+[KO] E8 supervision Zabbix : helios.suivi.http=000
+[OK] E9 sauvegarde
+Bilan : 7/9
+-> rc=1
+
+$ firewall-cmd -q --zone=internal --remove-port=8080/tcp ; /usr/local/sbin/helios-suivi-audit.sh | grep -E 'E6|Bilan'
+[KO] E6 pare-feu (8080 seulement en internal) : 8080 absent de internal (runtime)
+Bilan : 7/9
+
+$ /usr/local/sbin/helios-suivi-audit.sh | tail -1
+Bilan : 9/9
+

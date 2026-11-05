@@ -4,6 +4,7 @@
 # Code retour 0 seulement si les 9 exigences sont conformes.
 # Un controle qui ne peut pas s'executer compte comme KO (pas de faux OK).
 set -uo pipefail
+cherche() { [ -n "$(grep "$@")" ]; }
 export LC_ALL=C
 
 WWW=/srv/helios/suivi/www
@@ -84,20 +85,20 @@ else
 fi
 age=$(( $(date +%s) - $(stat -c %Y "$WWW/etat.json" 2>/dev/null || echo 0) ))
 [[ $age -lt 300 ]] || ko "etat.json vieux de ${age}s"
-journalctl -t helios-suivi-publish --since '-10min' -q --no-pager 2>/dev/null | grep -q 'publie' \
+journalctl -t helios-suivi-publish --since '-10min' -q --no-pager 2>/dev/null | cherche 'publie' \
   || ko "aucune publication journalisee depuis 10 min"
 resultat E3 "publication de etat.json"
 
 # ---------------------------------------------------------------- E4
 systemctl is-active -q helios-suivi.service || ko "portail arrete"
 systemctl is-enabled -q helios-suivi.service || ko "portail non active au boot"
-systemctl list-dependencies helios.target --plain 2>/dev/null | grep -q 'helios-suivi.service' \
+systemctl list-dependencies helios.target --plain 2>/dev/null | cherche 'helios-suivi.service' \
   || ko "portail non rattache a helios.target"
 [[ $(systemctl show -p User --value helios-suivi.service) == helios-suivi ]] || ko "User different de helios-suivi"
 [[ $(systemctl show -p MemoryMax --value helios-suivi.service) == 134217728 ]] || ko "MemoryMax"
 [[ $(systemctl show -p CPUQuotaPerSecUSec --value helios-suivi.service) == 500ms ]] || ko "CPUQuota"
 [[ $(systemctl show -p Restart --value helios-suivi.service) =~ ^(always|on-failure|on-abnormal)$ ]] || ko "pas de redemarrage auto"
-score=$(systemd-analyze security helios-suivi.service 2>/dev/null | awk '/Overall exposure level/ {print $(NF-1)}')
+score=$(systemd-analyze security helios-suivi.service 2>/dev/null | awk '/Overall exposure level/ {for (i=NF;i;i--) if ($i+0 == $i) print $i}')
 if [[ -n "$score" ]]; then
   awk -v s="$score" 'BEGIN { exit !(s <= 4.0) }' || ko "exposition $score > 4.0"
 else
@@ -117,7 +118,7 @@ if [[ -f $F ]]; then
   [[ $(stat -c '%U:%G %a' "$F") == "root:root 440" ]] || ko "92-helios-suivi pas en 0440 root:root"
   visudo -cf "$F" >/dev/null 2>&1 || ko "syntaxe sudoers invalide"
   grep -q 'NOPASSWD' "$F" && ko "NOPASSWD present"
-  grep -v '^[[:space:]]*#' "$F" | grep -q '\*' && ko "joker * dans les regles"
+  grep -v '^[[:space:]]*#' "$F" | cherche '\*' && ko "joker * dans les regles"
   sudo -l -U lea /usr/bin/systemctl restart helios-suivi.service >/dev/null 2>&1 || ko "lea ne peut pas redemarrer le portail"
   sudo -l -U lea /usr/bin/systemctl start helios-suivi-publish.service >/dev/null 2>&1 || ko "lea ne peut pas publier"
   sudo -l -U lea /usr/bin/journalctl -u helios-suivi.service -n 100 >/dev/null 2>&1 || ko "lea ne lit pas le journal"
@@ -135,7 +136,7 @@ if firewall-cmd --state >/dev/null 2>&1; then
   firewall-cmd -q --permanent --zone=internal --query-port=8080/tcp || ko "8080 absent de internal (permanent)"
   for z in $(firewall-cmd --get-zones); do
     [[ $z == internal ]] && continue
-    firewall-cmd --zone="$z" --list-all 2>/dev/null | grep -q 8080 && ko "8080 dans la zone $z"
+    firewall-cmd --zone="$z" --list-all 2>/dev/null | cherche 8080 && ko "8080 dans la zone $z"
   done
   [[ $(firewall-cmd --get-default-zone) == drop ]] || ko "zone par defaut differente de drop"
 else
@@ -175,7 +176,7 @@ resultat E8 "supervision Zabbix"
 derniere=$(ls -1t "$ARCH"/suivi-*.tar.gz 2>/dev/null | head -1)
 if [[ -n "$derniere" ]]; then
   ( cd "$ARCH" && sha256sum -c --quiet "$(basename "$derniere").sha256" >/dev/null 2>&1 ) || ko "empreinte invalide pour $(basename "$derniere")"
-  tar -tzf "$derniere" 2>/dev/null | grep -q 'srv/helios/suivi/www/index.html' || ko "index.html absent de l'archive"
+  tar -tzf "$derniere" 2>/dev/null | cherche 'srv/helios/suivi/www/index.html' || ko "index.html absent de l'archive"
   n=$(ls -1 "$ARCH"/suivi-*.tar.gz | wc -l)
   [[ $n -le 7 ]] || ko "$n archives (7 max)"
   [[ $(( $(date +%s) - $(stat -c %Y "$derniere") )) -lt 93600 ]] || ko "derniere archive de plus de 26 h"

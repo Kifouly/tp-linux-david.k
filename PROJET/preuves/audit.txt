@@ -1,0 +1,11 @@
+[OK] E1 comptes lea / helios-suivi et groupe suivi
+[OK] E2 repertoire publie (setgid, ACL)
+[OK] E3 publication de etat.json
+[OK] E4 units systemd (portail durci, publication)
+[OK] E5 delegation sudo
+[OK] E6 pare-feu (8080 seulement en internal)
+[OK] E7 non-regression securite (TP1 a TP3)
+[OK] E8 supervision Zabbix
+[OK] E9 sauvegarde
+Bilan : 9/9
+-> rc=0

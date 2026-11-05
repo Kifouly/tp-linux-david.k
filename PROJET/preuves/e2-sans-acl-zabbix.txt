@@ -1,0 +1,7 @@
++ setfacl -x u:zabbix /srv/helios/suivi/www
++ zabbix_get -s 127.0.0.1 -k helios.suivi.age
+/usr/bin/stat: impossible d'exécuter statx '/srv/helios/suivi/www/etat.json': Permission non accordée
+sh: ligne 1: 1793875544 -   : erreur de syntaxe : opérande attendu (le symbole erroné est « -   »)
++ setfacl -m u:zabbix:x /srv/helios/suivi/www
++ zabbix_get -s 127.0.0.1 -k helios.suivi.age
+99

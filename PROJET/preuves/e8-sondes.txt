@@ -1,0 +1,22 @@
+$ cat /etc/zabbix/zabbix_agent2.d/helios-suivi.conf
+# /etc/zabbix/zabbix_agent2.d/helios-suivi.conf - sondes du portail de suivi
+# code HTTP de etat.json (200 attendu, 000 si le portail ne repond pas)
+UserParameter=helios.suivi.http,/usr/bin/curl -s -o /dev/null -w '%{http_code}' --max-time 5 http://127.0.0.1:8080/etat.json
+# age en secondes de etat.json (< 300 attendu, il est republie toutes les 2 min)
+UserParameter=helios.suivi.age,echo $(( $(/usr/bin/date +%s) - $(/usr/bin/stat -c %Y /srv/helios/suivi/www/etat.json) ))
+
+$ zabbix_get -s 127.0.0.1 -k helios.suivi.http ; zabbix_get -s 127.0.0.1 -k helios.suivi.age
+200
+60
+
+$ systemctl is-active zabbix-agent2 sysstat-collect.timer ; systemctl is-enabled zabbix-agent2 sysstat-collect.timer
+active
+active
+enabled
+enabled
+
+$ ps -o user,label,cmd -C zabbix_agent2 | head -3 ; ausearch -m AVC -ts recent -i 2>&1 | tail -3
+USER     LABEL                           CMD
+zabbix   system_u:system_r:unconfined_service_t:s0 /usr/sbin/zabbix_agent2 -c /etc/zabbix/zabbix_agent2.conf
+<no matches>
+

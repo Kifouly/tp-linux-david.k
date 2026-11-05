@@ -1,0 +1,29 @@
+$ echo "archive : /srv/helios/archives/suivi/suivi-20261105-114626.tar.gz" ; date +%T
+archive : /srv/helios/archives/suivi/suivi-20261105-114626.tar.gz
+11:46:32
+
+$ mkdir /root/restauration-test && tar --acls --xattrs -xzpf /srv/helios/archives/suivi/suivi-20261105-114626.tar.gz -C /root/restauration-test && ls -l /root/restauration-test/srv/helios/suivi/www
+total 8
+-rw-r-----+ 1 helios-suivi suivi 184  5 nov.  11:46 etat.json
+-rw-rw----+ 1 lea          suivi 239  5 nov.  11:30 index.html
+
+$ diff <(getfacl -p /srv/helios/suivi/www | grep -v '^# file') <(getfacl -p /root/restauration-test/srv/helios/suivi/www | grep -v '^# file') && echo 'ACL de www identiques a la production'
+ACL de www identiques a la production
+
+$ getfacl -p /srv/helios/suivi/www/index.html > /root/acl-index-avant.txt ; rm -f /srv/helios/suivi/www/index.html ; curl -s -o /dev/null -w 'index apres suppression : %{http_code}\n' http://127.0.0.1:8080/index.html
+index apres suppression : 404
+
+$ duree tar --acls --xattrs -xzpf /srv/helios/archives/suivi/suivi-20261105-114626.tar.gz -C / srv/helios/suivi/www/index.html
+duree : 0.27 s
+
+$ ls -l /srv/helios/suivi/www/index.html ; diff /root/acl-index-avant.txt <(getfacl -p /srv/helios/suivi/www/index.html) && echo 'ACL de index.html identiques'
+-rw-rw----+ 1 lea suivi 239  5 nov.  11:30 /srv/helios/suivi/www/index.html
+ACL de index.html identiques
+
+$ curl -s -o /dev/null -w 'index restaure : %{http_code}\n' http://127.0.0.1:8080/index.html ; ls -l --time-style=+%T /srv/helios/suivi/www ; date +%T
+index restaure : 200
+total 8
+-rw-r-----+ 1 helios-suivi suivi 184 11:46:06 etat.json
+-rw-rw----+ 1 lea          suivi 239 11:30:23 index.html
+11:46:34
+

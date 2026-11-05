@@ -1,0 +1,7 @@
++ getent passwd 5105
++ usermod -u 5105 sysops
++ id sysops
+uid=5105(sysops) gid=5104(sysops) groupes=5104(sysops),983(ssh-admins)
++ ls --color=auto -ln /home/sysops/.ssh
+total 4
+-rw-------. 1 5105 5104 97  4 nov.  15:13 authorized_keys

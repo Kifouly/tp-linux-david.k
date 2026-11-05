@@ -1,0 +1,25 @@
+$ id lea ; getent passwd lea ; getent group suivi
+uid=5104(lea) gid=5003(suivi) groupes=5003(suivi)
+lea:x:5104:5003:Lea Fabre - responsable suivi des tournees:/home/lea:/bin/bash
+suivi:x:5003:
+
+$ chage -l lea
+Last password change					: nov. 05, 2026
+Password expires					: févr. 03, 2027
+Password inactive					: févr. 10, 2027
+Account expires						: never
+Minimum number of days between password change		: 1
+Maximum number of days between password change		: 90
+Number of days of warning before password expires	: 14
+
+$ getent shadow lea | cut -d: -f1,4-7
+lea:1:90:14:7
+
+$ id -nG lea | tr ' ' '\n' | grep -xE 'wheel|ssh-admins' || echo 'lea : ni wheel ni ssh-admins'
+lea : ni wheel ni ssh-admins
+
+$ id helios-suivi ; getent passwd helios-suivi ; ls -d /home/helios-suivi 2>&1
+uid=983(helios-suivi) gid=981(helios-suivi) groupes=981(helios-suivi)
+helios-suivi:x:983:981:Portail de suivi Helios:/srv/helios/suivi:/usr/sbin/nologin
+ls: impossible d'accéder à '/home/helios-suivi': Aucun fichier ou dossier de ce type
+

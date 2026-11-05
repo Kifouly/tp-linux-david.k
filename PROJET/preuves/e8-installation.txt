@@ -1,0 +1,22 @@
+$ grep -A1 '^\[epel\]' /etc/yum.repos.d/epel.repo 2>/dev/null ; rpm -q zabbix-release zabbix-agent2 zabbix-get sysstat
+zabbix-release-7.0-5.el9.noarch
+zabbix-agent2-7.0.32-release2.el9.x86_64
+zabbix-get-7.0.32-release2.el9.x86_64
+sysstat-12.5.4-11.el9.x86_64
+
+$ getent passwd zabbix
+zabbix:x:984:982:Zabbix Monitoring System:/var/lib/zabbix:/sbin/nologin
+
+$ grep -E '^(Server|ServerActive)=' /etc/zabbix/zabbix_agent2.conf
+Server=127.0.0.1
+ServerActive=127.0.0.1
+
+$ systemctl is-active zabbix-agent2 ; systemctl is-enabled zabbix-agent2 ; systemctl is-active sysstat-collect.timer ; systemctl is-enabled sysstat-collect.timer
+active
+enabled
+active
+enabled
+
+$ zabbix_get -s 127.0.0.1 -k agent.ping
+1
+

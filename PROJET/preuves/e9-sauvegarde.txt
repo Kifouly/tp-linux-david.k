@@ -1,0 +1,45 @@
+$ systemctl start helios-suivi-backup.service
+-> rc=0 (attendu 0)
+
+$ ls -ld /srv/helios/archives ; ls -l /srv/helios/archives/suivi
+drwxr-x---. 3 helios helios 19  5 nov.  11:46 /srv/helios/archives
+total 12
+-rw-r--r--. 1 root root 8160  5 nov.  11:46 suivi-20261105-114614.tar.gz
+-rw-r--r--. 1 root root   95  5 nov.  11:46 suivi-20261105-114614.tar.gz.sha256
+
+$ cd /srv/helios/archives/suivi && sha256sum -c $(ls -1t *.sha256 | head -1)
+suivi-20261105-114614.tar.gz: Réussi
+
+$ tar -tvzf $(ls -1t /srv/helios/archives/suivi/*.tar.gz | head -1)
+drwxr-s--- root/suivi        0 2026-11-05 11:27 srv/helios/suivi/
+drwxrws--- root/suivi        0 2026-11-05 11:46 srv/helios/suivi/www/
+-rw-rw---- lea/suivi       239 2026-11-05 11:30 srv/helios/suivi/www/index.html
+-rw-r----- helios-suivi/suivi 184 2026-11-05 11:46 srv/helios/suivi/www/etat.json
+-rw-r--r-- root/root         1238 2026-11-05 11:35 etc/systemd/system/helios-suivi.service
+-rw-r--r-- root/root          790 2026-11-05 11:35 etc/systemd/system/helios-suivi-publish.service
+-rw-r--r-- root/root          197 2026-11-05 11:35 etc/systemd/system/helios-suivi-publish.timer
+-rw-r--r-- root/root          632 2026-11-05 11:46 etc/systemd/system/helios-suivi-backup.service
+-rw-r--r-- root/root          196 2026-11-05 11:46 etc/systemd/system/helios-suivi-backup.timer
+-r--r----- root/root          881 2026-11-05 11:37 etc/sudoers.d/92-helios-suivi
+-rw-r--r-- root/root          476 2026-11-05 11:42 etc/zabbix/zabbix_agent2.d/helios-suivi.conf
+-rwxr-xr-x root/root         2075 2026-11-05 11:35 usr/local/sbin/helios-suivi-publish.sh
+-rwxr-xr-x root/root         2451 2026-11-05 11:46 usr/local/sbin/helios-suivi-backup.sh
+-rwxr-x--- root/root        10190 2026-11-05 11:46 usr/local/sbin/helios-suivi-audit.sh
+
+$ ls -1 /srv/helios/archives/suivi | grep -c 'tar.gz$' ; journalctl -t helios-suivi-backup -n 3 --no-pager
+7
+nov. 05 11:46:24 srv-core helios-suivi-backup[56600]: archive suivi-20261105-114624.tar.gz creee (12K), 0 ancienne(s) supprimee(s)
+nov. 05 11:46:25 srv-core helios-suivi-backup[56619]: archive suivi-20261105-114625.tar.gz creee (12K), 1 ancienne(s) supprimee(s)
+nov. 05 11:46:27 srv-core helios-suivi-backup[56637]: archive suivi-20261105-114626.tar.gz creee (12K), 1 ancienne(s) supprimee(s)
+
+$ /usr/local/sbin/helios-suivi-backup.sh
+-> rc=2 (attendu 2 (verrou tenu))
+
+$ systemctl list-timers helios-suivi-backup.timer --no-pager ; systemctl show -p Persistent helios-suivi-backup.timer
+NEXT                        LEFT     LAST PASSED UNIT                      ACTIVATES
+Fri 2026-11-06 03:15:00 CET 15h left -    -      helios-suivi-backup.timer helios-suivi-backup.service
+
+1 timers listed.
+Pass --all to see loaded but inactive timers, too.
+Persistent=yes
+

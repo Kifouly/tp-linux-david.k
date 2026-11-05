@@ -1,0 +1,26 @@
+$ sshd -T | grep -E '^(port|permitrootlogin|passwordauthentication|allowgroups) '
+port 2242
+permitrootlogin no
+passwordauthentication no
+allowgroups ssh-admins
+
+$ journalctl -u sshd --since '-30min' --no-pager | grep -E 'lea' | tail -3
+nov. 05 11:41:48 srv-core sshd-session[55965]: User lea from 192.168.56.11 not allowed because none of user's groups are listed in AllowGroups
+nov. 05 11:41:48 srv-core sshd-session[55965]: Connection closed by invalid user lea 192.168.56.11 port 34688 [preauth]
+
+$ systemctl is-active helios-watch-auth.timer helios-collect.service helios-archive.timer firewalld sshd ; journalctl --list-boots --no-pager | tail -3 ; grep -h Storage /etc/systemd/journald.conf.d/*.conf
+active
+active
+active
+active
+active
+ -2 2f26508279884363acde8aee32848f36 Wed 2026-11-04 15:23:11 CET Wed 2026-11-04 15:47:04 CET
+ -1 041ee73c9a9141de9c47f97bbddf80b9 Wed 2026-11-04 15:49:07 CET Wed 2026-11-04 15:49:48 CET
+  0 0a023d546dfe4b70ab8e523860b40624 Wed 2026-11-04 15:50:48 CET Thu 2026-11-05 11:42:25 CET
+Storage=persistent
+
+$ getenforce ; firewall-cmd --get-default-zone ; auditctl -l | wc -l
+Enforcing
+drop
+12
+

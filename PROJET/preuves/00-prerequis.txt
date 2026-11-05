@@ -1,0 +1,39 @@
+$ systemctl is-active helios-collect.service ; wc -l /var/lib/helios/telemetry.csv ; sleep 6 ; wc -l /var/lib/helios/telemetry.csv
+active
+4486 /var/lib/helios/telemetry.csv
+4487 /var/lib/helios/telemetry.csv
+
+$ systemctl cat helios.target | head -8
+# /etc/systemd/system/helios.target
+[Unit]
+Description=Pile applicative Helios
+Requires=multi-user.target
+After=multi-user.target
+AllowIsolate=no
+
+[Install]
+
+$ firewall-cmd --get-default-zone ; firewall-cmd --get-active-zones
+drop
+drop
+  interfaces: enp0s3 enp0s10 enp0s9
+internal
+  interfaces: bond0.42 bond0
+work
+  interfaces: enp0s8
+  sources: 192.168.56.0/24
+
+$ sshd -T | grep -E '^(port|allowgroups|passwordauthentication) '
+port 2242
+passwordauthentication no
+allowgroups ssh-admins
+
+$ systemctl is-active helios-watch-auth.timer
+active
+
+$ ls -ld /var/lib/helios /var/lib/helios/telemetry.csv /srv/helios ; getenforce
+drwxr-xr-x. 5 root   root       47  3 nov.  14:28 /srv/helios
+drwxr-x---. 3 helios helios     62  4 nov.  16:13 /var/lib/helios
+-rw-r--r--. 1 helios helios 170620  5 nov.  11:20 /var/lib/helios/telemetry.csv
+Enforcing
+

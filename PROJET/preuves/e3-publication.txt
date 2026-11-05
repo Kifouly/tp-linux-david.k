@@ -1,0 +1,52 @@
+$ runuser -u helios-suivi -- /usr/local/sbin/helios-suivi-publish.sh
+-> rc=0 (attendu 0)
+
+$ python3 -m json.tool /srv/helios/suivi/www/etat.json ; ls -l /srv/helios/suivi/www/etat.json
+{
+    "genere": "2026-11-05T11:35:19+01:00",
+    "hote": "srv-core",
+    "derniere_mesure": "2026-11-05T11:35:15+01:00",
+    "charge_1min": 0.24,
+    "mem_dispo_ko": 697288,
+    "mesures": 4659
+}
+-rw-r-----+ 1 helios-suivi suivi 184  5 nov.  11:35 /srv/helios/suivi/www/etat.json
+
+$ runuser -u helios-suivi -- /usr/local/sbin/helios-suivi-publish.sh
+-> rc=2 (attendu 2 (verrou tenu))
+
+$ runuser -u lea -- /usr/local/sbin/helios-suivi-publish.sh
+-> rc=3 (attendu 3 (lea ne lit pas la telemetrie))
+
+$ runuser -u helios -- /usr/local/sbin/helios-suivi-publish.sh
+-> rc=3 (attendu 3 (helios lit la telemetrie mais n'ecrit pas dans www))
+
+$ journalctl -t helios-suivi-publish -n 6 --no-pager
+nov. 05 11:32:06 srv-core helios-suivi-publish[54934]: etat.json publie : 4623 mesures, derniere a 2026-11-05T11:32:00+01:00
+nov. 05 11:34:05 srv-core helios-suivi-publish[55062]: etat.json publie : 4645 mesures, derniere a 2026-11-05T11:34:01+01:00
+nov. 05 11:35:19 srv-core helios-suivi-publish[55193]: etat.json publie : 4659 mesures, derniere a 2026-11-05T11:35:15+01:00
+nov. 05 11:35:21 srv-core helios-suivi-publish[55210]: une autre publication est deja en cours, abandon
+nov. 05 11:35:24 srv-core helios-suivi-publish[55216]: telemetrie illisible : /var/lib/helios/telemetry.csv
+nov. 05 11:35:25 srv-core helios-suivi-publish[55223]: /srv/helios/suivi/www absent ou non inscriptible pour helios
+
+$ systemctl start helios-suivi-publish.service
+-> rc=0 (attendu 0 (meme script via son unit durcie))
+
+$ systemctl status helios-suivi-publish.service --no-pager | head -12
+○ helios-suivi-publish.service - Helios - publication de etat.json pour le portail de suivi
+     Loaded: loaded (/etc/systemd/system/helios-suivi-publish.service; static)
+     Active: inactive (dead) since Thu 2026-11-05 11:35:26 CET; 196ms ago
+TriggeredBy: ● helios-suivi-publish.timer
+    Process: 55231 ExecStart=/usr/local/sbin/helios-suivi-publish.sh (code=exited, status=0/SUCCESS)
+   Main PID: 55231 (code=exited, status=0/SUCCESS)
+        CPU: 292ms
+
+nov. 05 11:35:25 srv-core systemd[1]: Starting Helios - publication de etat.json pour le portail de suivi...
+nov. 05 11:35:26 srv-core helios-suivi-publish[55245]: etat.json publie : 4661 mesures, derniere a 2026-11-05T11:35:25+01:00
+nov. 05 11:35:26 srv-core systemd[1]: helios-suivi-publish.service: Deactivated successfully.
+nov. 05 11:35:26 srv-core systemd[1]: Finished Helios - publication de etat.json pour le portail de suivi.
+
+$ runuser -u zabbix -- stat -c '%n %s octets %y' /srv/helios/suivi/www/etat.json
+/srv/helios/suivi/www/etat.json 184 octets 2026-11-05 11:35:26.355701661 +0100
+-> rc=0 (attendu 0 (stat sans pouvoir lister))
+

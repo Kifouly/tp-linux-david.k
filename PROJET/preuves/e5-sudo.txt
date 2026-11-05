@@ -1,0 +1,60 @@
+$ visudo -cf /root/tp/PROJET/configs/92-helios-suivi
+/root/tp/PROJET/configs/92-helios-suivi : analyse réussie
+
+$ ls -l /etc/sudoers.d/ ; visudo -c
+total 12
+-r--r-----. 1 root root 1169  3 nov.  14:36 90-helios-ops
+-r--r-----. 1 root root   92  3 nov.  14:37 91-nadia-edition
+-r--r-----. 1 root root  881  5 nov.  11:37 92-helios-suivi
+/etc/sudoers : analyse réussie
+/etc/sudoers.d/90-helios-ops : analyse réussie
+/etc/sudoers.d/91-nadia-edition : analyse réussie
+/etc/sudoers.d/92-helios-suivi : analyse réussie
+
+$ sudo -l -U lea
+Entrées Defaults correspondant pour lea sur srv-core :
+    !visiblepw, always_set_home, match_group_by_gid, always_query_group_plugin, env_reset, env_keep="COLORS DISPLAY HOSTNAME HISTSIZE KDEDIR LS_COLORS", env_keep+="MAIL PS1 PS2 QTDIR USERNAME LANG LC_ADDRESS LC_CTYPE", env_keep+="LC_COLLATE LC_IDENTIFICATION LC_MEASUREMENT LC_MESSAGES", env_keep+="LC_MONETARY LC_NAME LC_NUMERIC LC_PAPER LC_TELEPHONE", env_keep+="LC_TIME LC_ALL LANGUAGE LINGUAS _XKB_CHARSET XAUTHORITY", secure_path=/sbin\:/bin\:/usr/sbin\:/usr/bin, timestamp_timeout=5, passwd_tries=3, logfile=/var/log/sudo-suivi.log
+
+L'utilisateur lea peut utiliser les commandes suivantes sur srv-core :
+    (root) /usr/bin/systemctl restart helios-suivi.service, /usr/bin/systemctl status helios-suivi.service, /usr/bin/systemctl start helios-suivi-publish.service, /usr/bin/journalctl -u helios-suivi.service -n 100, /usr/bin/journalctl -u helios-suivi.service -n 100 --no-pager, /usr/bin/journalctl -u helios-suivi-publish.service -n 100, /usr/bin/journalctl -u helios-suivi-publish.service -n 100 --no-pager
+
+$ sudo -l -U lea /usr/bin/systemctl restart helios-suivi.service
+/usr/bin/systemctl restart helios-suivi.service
+-> rc=0 (attendu 0)
+
+$ sudo -l -U lea /usr/bin/systemctl restart sshd
+-> rc=1 (attendu !=0 (rien de liste))
+
+$ sudo -l -U lea /usr/bin/journalctl -u helios-suivi.service -n 100 --vacuum-time=1s
+-> rc=1 (attendu !=0 (option ajoutee))
+
+$ sudo -l -U lea /usr/bin/journalctl --vacuum-time=1s
+-> rc=1 (attendu !=0)
+
+$ echo 'Helios-Suivi-2026' | su - lea -c 'sudo -S systemctl restart helios-suivi.service' 2>&1 | grep -v '^$'
+Nous espérons que vous avez reçu de votre administrateur système local
+les consignes traditionnelles. Généralement, elles se concentrent sur ces trois éléments :
+    #1) Respectez la vie privée des autres.
+    #2) Réfléchissez avant d'utiliser le clavier.
+    #3) De grands pouvoirs confèrent de grandes responsabilités.
+Pour des raisons de sécurité, le mot de passe que vous tapez ne sera pas visible.
+[sudo] Mot de passe de lea : 
+-> rc=0 (attendu 0 (essai reel en lea))
+
+$ echo 'Helios-Suivi-2026' | su - lea -c 'sudo -S journalctl -u helios-suivi-publish.service -n 100 --no-pager' 2>&1 | tail -3
+nov. 05 11:36:05 srv-core helios-suivi-publish[55400]: etat.json publie : 4668 mesures, derniere a 2026-11-05T11:36:02+01:00
+nov. 05 11:36:05 srv-core systemd[1]: helios-suivi-publish.service: Deactivated successfully.
+nov. 05 11:36:05 srv-core systemd[1]: Finished Helios - publication de etat.json pour le portail de suivi.
+-> rc=0 (attendu 0)
+
+$ echo 'Helios-Suivi-2026' | su - lea -c 'sudo -S systemctl restart sshd' 2>&1 | grep -v '^$'
+[sudo] Mot de passe de lea : Désolé, l'utilisateur lea n'est pas autorisé à exécuter « /bin/systemctl restart sshd » en tant que root sur srv-core.
+-> rc=1 (attendu !=0 (refuse))
+
+$ systemctl is-active helios-suivi.service ; tail -4 /var/log/sudo-suivi.log
+active
+Nov  5 11:37:07 : lea : PWD=/home/lea ; USER=root ; COMMAND=/usr/bin/journalctl
+    -u helios-suivi-publish.service -n 100 --no-pager
+Nov  5 11:37:09 : lea : command not allowed ; PWD=/home/lea ; USER=root ;
+    COMMAND=/bin/systemctl restart sshd
+
