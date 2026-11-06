@@ -139,4 +139,4 @@ Pendant 2000 `curl` (114 s), le portail consomme 11,0 s de CPU, soit environ 10 
 
 ![Audit](rendu/fig17-audit.jpg "115")
 
-Sur le serveur conforme : `Bilan : 9/9`, `rc=0`. Portail arrêté : E4 et E8 passent en KO, `rc=1`. 8080 retiré du runtime : `[KO] E6 … 8080 absent de internal (runtime)`. Après remise en état : 9/9. Au premier passage, l'audit avait deux faux KO, causés par `grep -q` avec `pipefail` et par la lecture du score. Je les ai corrigés, voir RAPPORT §5.
+Sur le serveur conforme : `Bilan : 9/9`, `rc=0`. Portail arrêté : E4 et E8 passent en KO, `rc=1`. 8080 retiré du runtime : `[KO] E6 … 8080 absent de internal (runtime)`. Après remise en état : 9/9. Le 6 novembre, après un redémarrage complet des VM, l'audit donne encore 9/9 sans rien toucher. Au premier passage, l'audit avait deux faux KO, causés par `grep -q` avec `pipefail` et par la lecture du score. Je les ai corrigés, voir RAPPORT §5.
